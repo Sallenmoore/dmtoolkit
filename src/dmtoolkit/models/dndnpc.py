@@ -1,20 +1,28 @@
 from autonomous.model.automodel import AutoModel
 from autonomous import log
-from .dndnpc import NPC
 import random
 from .. import OpenAI
 from autonomous.storage.cloudinarystorage import CloudinaryStorage
 
 
-class Shop(AutoModel):
+class NPC(AutoModel):
     attributes = {
         "name": "",
+        "gender": "",
         "image": {"url": "", "asset_id": 0, "raw": None},
-        "shoptype": "",
-        "owner": None,
-        "inventory": {},
-        "location": "",
+        "race": "",
         "desc": "",
+        "personality": "",
+        "class_name": "",
+        "occupation": "",
+        "age": 0,
+        "inventory": [],
+        "str": 0,
+        "dex": 0,
+        "con": 0,
+        "wis": 0,
+        "int": 0,
+        "cha": 0,
     }
 
     def generate_image(self):
@@ -27,6 +35,6 @@ class Shop(AutoModel):
         self.save()
 
     def get_image_prompt(self):
-        description = self.desc or "A simple shop with wooden counters and shelves."
-        style = random.choice(["pixar style 3d", "pencil sketch", "watercolor"])
-        return f"A full color {style} of a fantasy world merchant shop called {self.name} witht he following description: {description}"
+        description = self.desc or "An npc character"
+        style = random.choice(["pixar style 3d", "colored pencil sketch", "watercolor"])
+        return f"A full color {style} of a {self.name} from Dungeons and Dragons 5e - {description}"

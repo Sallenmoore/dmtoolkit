@@ -1,5 +1,5 @@
-from ...db.autodb import Database
-from ...model.orm import ORM
+from autonomous.db.autodb import Database
+from autonomous.model.orm import ORM
 import os
 import sys
 

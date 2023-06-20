@@ -59,7 +59,7 @@ class Monster(DnDObject):
         style = random.choice(
             [
                 "The Rusted Pixel style digital",
-                "Albrecht Dürer style photorealistic pencil sketch",
+                "Albrecht Dürer style photorealistic colored pencil sketch",
                 "William Blake style watercolor",
             ]
         )

@@ -32,11 +32,11 @@ class Item(DnDObject):
 
     @classmethod
     def get_image_prompt(self):
-        description = self.desc or "An equipable item"
+        description = self.desc or "displayed on a table"
         style = random.choice(
             [
-                "The Rusted Pixel style digital",
-                "Albrecht Dürer style photorealistic pencil sketch",
+                "Rusted Pixel style digital art",
+                "Albrecht Dürer style photorealistic colored pencil sketch",
                 "William Blake style watercolor",
             ]
         )
