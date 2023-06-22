@@ -4,10 +4,33 @@
 
 ![Tests](https://github.com/Sallenmoore/autonomous/actions/workflows/tests.yml/badge.svg)
 
-TBD
+- **[pypi](https://pypi.org/project/dmtoolkit/)**
+- **[github](https://github.com/Sallenmoore/dmtoolkit)**
 
-- **pypi**: https://test.pypi.org/project/autonomous
-- **github**: https://github.com/Sallenmoore/autonomous
+## Setup
+
+Add the following to your .env file:
+
+```bash
+#### OpenAI Config
+OPENAI_KEY=
+
+### Cloudinary Config
+CLOUD_NAME=
+CLOUDINARY_KEY=
+CLOUDINARY_SECRET=
+
+### WikiJS Config
+
+WIKIJS_TOKEN = ""
+WIKIJS_URL = ""
+
+# DEV OPTIONS
+
+DEBUG=True
+TESTING=True
+LOG_LEVEL=INFO
+```
 
 ## Features
 
@@ -19,12 +42,17 @@ TBD
   - [Python 3.10](/Dev/language/python)
 - **Frameworks**
   - [Autonomous](https://github.com/Sallenmoore/autonomous)
-  - [gql](#)
+  - [gql](https://github.com/graphql-python/gql)
 - **Containers**
   - [Docker](https://docs.docker.com/)
   - [Docker Compose](https://github.com/compose-spec/compose-spec/blob/master/spec.md)
-- **Networking and Serialization**
+- **Networking and APIs**
   - [requests](https://requests.readthedocs.io/en/latest/)
+  - [OpenAI](https://beta.openai.com/docs/api-reference/introduction)
+  - [Cloudinary](https://cloudinary.com/documentation/image_upload_api_reference)
+  - [WikiJS](https://docs.requarks.io/en/api)
+- **Databases**
+  - [TinyDB](https://tinydb.readthedocs.io/en/latest/)
 - **Testing**
   - [pytest](/Dev/tools/pytest)
   - [coverage](https://coverage.readthedocs.io/en/6.4.1/cmd.html)
@@ -41,22 +69,12 @@ TBD
 ### TODO
 
 - Auto generate API documentation
-- Setup/fix template app generator
-- Add type hints
-- Switch to less verbose html preprocessor
-- Add more database options
-- Improve database search
-- 100% testing coverage
 
 ### Issue Tracking
 
 - None
 
-## Commands
-
-### Generate app
-
-TDB
+## Make Commands
 
 ### Tests
 
@@ -66,7 +84,7 @@ make tests
 
 ### package
 
-1. Update version in `/src/autonomous/__init__.py`
+1. Update version in `/src/dmtoolkit/__init__.py`
 2. ```sh
-   make tests
+   make package
    ```

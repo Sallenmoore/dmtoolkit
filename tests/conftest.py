@@ -3,6 +3,13 @@ from models.dndplayer import Player
 from models.dndnpc import NPC
 from models.dndshop import Shop
 
+from dotenv import load_dotenv
+
+
+@pytest.fixture(scope='session', autouse=True)
+def load_env():
+    load_dotenv()
+
 @pytest.fixture
 def monster():
     return {
