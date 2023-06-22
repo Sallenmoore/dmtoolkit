@@ -3,11 +3,11 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "autonomous"
+name = "dmtoolkit"
 authors = [
     {name = "Steven A Moore", email = "samoore@binghamton.edu"},
 ]
-description = "Containerized application framework built on Flask with additional libraries and tools for rapid development of web applications."
+description = "A collection of CLI tools for D&D5e DMs."
 dynamic = ["version", "dependencies"]
 readme = "README.md"
 requires-python = ">=3.10"
@@ -19,15 +19,11 @@ classifiers=[
 ]
 
 [project.urls]
-homepage="https://github.com/Sallenmoore/autonomous"
-
-[project.scripts]
-#https://setuptools.pypa.io/en/latest/userguide/entry_point.html
-autoapp = "autonomous.cli:createapp"
+homepage="https://github.com/Sallenmoore/dmtoolkit"
 
 [tool.setuptools.dynamic]
 #https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html#dynamic-metadata
-version = {attr = "autonomous.__version__"}
+version = {attr = "dmtoolkit.__version__"}
 dependencies = {file = ["requirements.txt"]}
 
 [tool.setuptools.dynamic.optional-dependencies]
@@ -36,10 +32,14 @@ dev = {file = ["requirements_dev.txt"]}
 [tool.setuptools.packages.find]
 # All the following settings are optional:
 where = ["src"]
-include = ["autonomous*"]
+include = ["dmtoolkit*"]
 
 [tool.pytest.ini_options]
-addopts = "--cov=autonomous -rx -l -x --log-level=INFO --ignore=src --no-cov-on-fail" #  -v  --cov-reset
+addopts = "--cov=dmtoolkit -s -rx -l -x --log-level=INFO --ignore=src --no-cov-on-fail" #  -v  --cov-reset
 testpaths = [
      "tests",
 ]
+pythonpath = [
+    "src/dmtoolkit",
+]
+log_auto_indent = true

@@ -1,6 +1,6 @@
-from ..api import open5eapi
-from ..api import OpenAI
-from .db.dndorm import DnDORM
+from apis import open5eapi
+from apis import OpenAI
+from db.dndorm import DnDORM
 
 from autonomous.storage.cloudinarystorage import CloudinaryStorage
 from autonomous.model.automodel import AutoModel
@@ -22,7 +22,7 @@ class DnDObject(AutoModel):
         if self.image.get("raw"):
             folder = f"dnd/{self.__class__.__name__.lower()}s/{self.slug}"
             self.image = self._storage.save(self.image["raw"], folder=folder)
-        super().save()
+        return super().save()
 
     def generate_image(self):
         resp = OpenAI().generate_image(
@@ -31,7 +31,7 @@ class DnDObject(AutoModel):
         )
         folder = f"dnd/{self.__class__.__name__.lower()}s"
         self.image = self._storage.save(resp[0], folder=folder)
-        self.save()
+        return self.save()
 
     def get_image_prompt(self):
         return f"A full color portrait of a {self.name} from Dungeons and Dragons 5e - {self.desc}"

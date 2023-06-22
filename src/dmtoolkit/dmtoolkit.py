@@ -1,23 +1,20 @@
-import os
-import shutil
 import json
 import random
-import sys
 from slugify import slugify
 
-from datetime import datetime
 from autonomous.logger import log
-from autonomous.storage.cloudinarystorage import CloudinaryStorage
-from .. import OpenAI
-from .dndmonster import Monster
-from .dnditem import Item
-from .dndspell import Spell
-from .dndplayer import Player
-from .dndnpc import NPC
-from .dndshop import Shop
+
+from apis.openai import OpenAI
+
+from models import Monster
+from models import Item
+from models import Spell
+from models import Player
+from models import NPC
+from models import Shop
 
 
-class OpenDnD:
+class DMToolkit:
     """
     _summary_
 
@@ -253,7 +250,7 @@ class OpenDnD:
         loot_type = random.choices(
             loot,
             weights=[10, 5, 3, 30, 10, 10],
-            k=difficulty[0] * OpenDnD.LOOT_MULTIPLIER,
+            k=difficulty[0] * DMToolkit.LOOT_MULTIPLIER,
         )
         prompt = f"Generate an appropriate D&D 5e encounter for a party of {num_players} level {level} pcs that is {difficulty[1]} and rewards the following type of loot items: {loot_type}"
         funcobj = {

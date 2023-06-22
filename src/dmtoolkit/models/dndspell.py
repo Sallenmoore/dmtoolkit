@@ -24,7 +24,7 @@ class Spell(DnDObject):
 
     @classmethod
     def update_db(cls):
-        cls._update_db(cls._api.DnDSpell)
+        cls._update_db(cls._api.Open5eSpell)
 
     @classmethod
     def get_image_prompt(self):

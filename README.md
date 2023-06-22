@@ -1,52 +1,30 @@
-# Autonomous
+# dmtoolkit
 
 !!!!!!!!!!!!!!!!!!!! NOT YET STABLE !!!!!!!!!!!!!!!!!!!!!!!!
 
 ![Tests](https://github.com/Sallenmoore/autonomous/actions/workflows/tests.yml/badge.svg)
 
-A local, containerized, service based application library built on top of Flask. 
-The goal is to make it easy to create self-contained Python applications with minimal dependencies and built in libraries for many different kinds of tasks.
+TBD
 
 - **pypi**: https://test.pypi.org/project/autonomous
 - **github**: https://github.com/Sallenmoore/autonomous
 
 ## Features
 
-- Fully containerized, service based Python application framework
-- All services are localized to a virtual intranet
-- Built-in Local NoSQL database and Model API
-- Auto-Generated Documentation Pages (Coming Soon!!!)
-
-### Container Apps
-
-Autonomous App has minimally 2 container components:
-
-- **server**
-  - nginx proxy server listening on port 80
-  - static files and assets are served from here. This is also the main entry point for the application.
-- **test**
-  - access documentation on port:TBD
-  - Test app for the library
+- TBD
 
 ## Dependencies
 
 - **Languages**
   - [Python 3.10](/Dev/language/python)
 - **Frameworks**
-  - [Flask](https://flask.palletsprojects.com/en/2.1.x/)
+  - [Autonomous](https://github.com/Sallenmoore/autonomous)
+  - [gql](#)
 - **Containers**
   - [Docker](https://docs.docker.com/)
   - [Docker Compose](https://github.com/compose-spec/compose-spec/blob/master/spec.md)
-- **Server**
-  - [nginx](https://docs.nginx.com/nginx/)
-  - [gunicorn](https://docs.gunicorn.org/en/stable/configure.html)
 - **Networking and Serialization**
   - [requests](https://requests.readthedocs.io/en/latest/)
-- **Database**
-  - [Local](https://tinydb.readthedocs.io/en/latest/)
-  - [MongoDB](#) - Coming Soon
-  - [Redis](#) - Coming Soon
-  - [Firestore](#) - Coming Soon
 - **Testing**
   - [pytest](/Dev/tools/pytest)
   - [coverage](https://coverage.readthedocs.io/en/6.4.1/cmd.html)

@@ -1,6 +1,6 @@
 from autonomous.model.automodel import AutoModel
 from autonomous import log
-from .dndbeyondapi import DnDBeyondAPI
+from apis import DnDBeyondAPI
 from slugify import slugify
 from autonomous.storage.cloudinarystorage import CloudinaryStorage
 

@@ -45,7 +45,7 @@ class Monster(DnDObject):
 
     @classmethod
     def update_db(cls):
-        cls._update_db(cls._api.DnDMonster)
+        cls._update_db(cls._api.Open5eMonster)
 
     @classmethod
     def get_image_prompt(self):

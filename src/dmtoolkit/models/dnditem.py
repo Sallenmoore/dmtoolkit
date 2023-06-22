@@ -23,12 +23,11 @@ class Item(DnDObject):
     }
 
     def __init__(self, **kwargs):
-        kwargs["desc"] = markdown.markdown(kwargs.get("desc") or "")
-        super().__init__(**kwargs)
+        self.desc = markdown.markdown(self.desc)
 
     @classmethod
     def update_db(cls):
-        cls._update_db(cls._api.DnDItem)
+        cls._update_db(cls._api.Open5eItem)
 
     @classmethod
     def get_image_prompt(self):

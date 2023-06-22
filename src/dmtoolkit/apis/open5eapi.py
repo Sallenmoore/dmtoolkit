@@ -4,15 +4,37 @@ import requests
 class Open5e:
     api_url = "https://api.open5e.com/"
 
+    @classmethod
+    def all(cls, endpoint=None):
+        endpoint = endpoint or f"{cls.api_url}"
+        response = requests.get(endpoint).json()
+        results = response["results"]
+        while response.get("next"):
+            response = requests.get(response["next"]).json()
+            results += response["results"]
+        return [cls._build(r) for r in results]
 
-class DnDMonster(Open5e):
+    @classmethod
+    def search(cls, term, key="search"):
+        response = requests.get(f"{cls.api_url}/?{key}={term}").json()
+        return [cls._build(r) for r in response["results"]]
+
+    @classmethod
+    def get(cls, url=None):
+        if url:
+            results = requests.get(url).json()
+            return cls._build(results)
+
+
+class Open5eMonster(Open5e):
+    api_url = "https://api.open5e.com/monsters"
+
     @classmethod
     def _build(cls, data):
         obj = {}
         obj["name"] = data["name"]
         obj["type"] = data["type"]
         obj["image"] = {"url": data.get("img_main"), "asset_id": 0, "raw": None}
-
         obj["size"] = data.get("size")
         obj["subtype"] = data.get("subtype")
         obj["alignment"] = data.get("alignment")
@@ -54,32 +76,14 @@ class DnDMonster(Open5e):
         if data.get("spell_list"):
             obj["spell_list"] = {}
             for a in data["spell_list"]:
-                spell = DnDSpell.get(url=a)
+                spell = Open5eSpell.get(url=a)
                 obj["spell_list"][spell["name"]] = spell
         return obj
 
-    @classmethod
-    def all(cls):
-        response = requests.get(f"{cls.api_url}monsters/").json()
-        results = response["results"]
-        while response.get("next"):
-            response = requests.get(response["next"]).json()
-            results += response["results"]
-        return [cls._build(r) for r in results]
 
-    @classmethod
-    def search(cls, term):
-        response = requests.get(f"{cls.api_url}monsters/?search={term}").json()
-        return [cls._build(r) for r in response["results"]]
+class Open5eSpell(Open5e):
+    api_url = "https://api.open5e.com/spells"
 
-    @classmethod
-    def get(cls, url=None):
-        if url:
-            results = requests.get(url).json()
-            return cls._build(results)
-
-
-class DnDSpell(Open5e):
     @classmethod
     def _build(cls, data):
         obj = {}
@@ -107,28 +111,8 @@ class DnDSpell(Open5e):
             obj["circles"] = data["circles"]
         return obj
 
-    @classmethod
-    def all(cls):
-        response = requests.get(f"{cls.api_url}spells/").json()
-        results = response["results"]
-        while response.get("next"):
-            response = requests.get(response["next"]).json()
-            results += response["results"]
-        return [cls._build(r) for r in results]
 
-    @classmethod
-    def search(cls, term):
-        response = requests.get(f"{cls.api_url}spells/?search={term}").json()
-        return [cls._build(r) for r in response["results"]]
-
-    @classmethod
-    def get(cls, url=None):
-        if url:
-            results = requests.get(url).json()
-            return cls._build(results)
-
-
-class DnDItem(Open5e):
+class Open5eItem(Open5e):
     @classmethod
     def _build(cls, data):
         obj = {}
@@ -146,44 +130,19 @@ class DnDItem(Open5e):
         obj["strength_requirement"] = data.get("strength_requirement")
         obj["stealth_disadvantage"] = data.get("stealth_disadvantage")
         obj["properties"] = data.get("properties")
-        obj["desc"] = data.get("desc")
+        obj["desc"] = data.get("desc", "")
         return obj
 
     @classmethod
     def all(cls):
-        response = requests.get(f"{cls.api_url}magicitems/").json()
-        results = response["results"]
-        while response.get("next"):
-            response = requests.get(response["next"]).json()
-            results += response["results"]
-
-        response = requests.get(f"{cls.api_url}weapons/").json()
-        results += response["results"]
-        while response.get("next"):
-            response = requests.get(response["next"]).json()
-            results += response["results"]
-
-        response = requests.get(f"{cls.api_url}armor/").json()
-        results += response["results"]
-        while response.get("next"):
-            response = requests.get(response["next"]).json()
-            results += response["results"]
-
-        return [cls._build(r) for r in results]
+        results = []
+        for endpoint in ["armor/", "weapons/", "magicitems/"]:
+            results += super().all(cls.api_url + endpoint)
+        return results
 
     @classmethod
-    def search(cls, term):
-        response = requests.get(f"{cls.api_url}magicitems/?search={term}").json()[
-            "results"
-        ]
-        response += requests.get(f"{cls.api_url}weapons/?search={term}").json()[
-            "results"
-        ]
-        response += requests.get(f"{cls.api_url}armor/?search={term}").json()["results"]
-        return [cls._build(r) for r in response]
-
-    @classmethod
-    def get(cls, url=None):
-        if url:
-            results = requests.get(url).json()
-            return cls._build(results)
+    def search(cls, term, key="search"):
+        results = []
+        for endpoint in ["armor/", "weapons/", "magicitems/"]:
+            results += super().search(f"{cls.api_url + endpoint}?{key}={term}")
+        return results

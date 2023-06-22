@@ -5,7 +5,7 @@ import random
 
 import openai
 
-from ..logger import log
+from autonomous import log
 
 
 class OpenAI:

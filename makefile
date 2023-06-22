@@ -19,29 +19,16 @@ package:
 ###### CLEANING #######
 
 clean:
-	sudo docker ps -a
-	-sudo docker kill $(CONTAINERS)
-	sudo docker ps -a
-
-deepclean: clean
-	-sudo docker container prune -f
-	-sudo docker image prune -f
-	-sudo docker system prune -a -f --volumes
+	rm -rf .pytest_cache
 
 ###### TESTING #######
-	
-tests: testauto testapp
 
-# docker-compose up --build -d
 RUNTEST?='test_'
 test: clean
 	python -m pytest $(RUNTEST)
 
-testauto: clean 
+tests: clean 
 	pip install --no-cache-dir --upgrade pip wheel
 	pip install -r ./requirements.txt
-	python -m pytest -s -v
+	python -m pytest
 
-# docker-compose up --build -d
-testapp: clean
-	cd src/autonomous/app_template; make tests

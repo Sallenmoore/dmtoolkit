@@ -4,8 +4,7 @@ import os
 import sys
 
 
-class DnDORM:
+class DnDORM(ORM):
     def __init__(self, table):
-        self._table = Database(
-            path=f"{os.path.dirname(sys.modules[__name__].__file__)}/db"
-        ).get_table(table=table)
+        self.db = Database(path=f"/{os.path.dirname(sys.modules[__name__].__file__)}/")
+        self._table = self.db.get_table(table=table)
