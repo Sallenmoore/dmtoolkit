@@ -42,6 +42,10 @@ class DnDBeyondAPI:
         character = {}
         character["name"] = kwargs.get("name")
         character["age"] = kwargs.get("age") or 0
+        character["gender"] = kwargs.get("gender") or "Non-Binary"
+        character[
+            "description"
+        ] = f" With {kwargs.get('hair')} hair, {kwargs.get('skin')} skin, and {kwargs.get('eyes')} eyes, {character['name']} stands at {kwargs.get('height')} and weighs {kwargs.get('weight')}"
 
         # breakpoint()
         character["image"] = {
@@ -56,7 +60,7 @@ class DnDBeyondAPI:
             character["race"] = kwargs.get("race")["fullName"]
 
         if kwargs.get("notes"):
-            character["desc"] = kwargs["notes"].get("backstory") or ""
+            character["backstory"] = kwargs["notes"].get("backstory") or ""
 
         character["wealth"] = kwargs.get("currencies")
 

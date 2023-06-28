@@ -4,12 +4,7 @@ import random
 from autonomous import log
 
 from dmtoolkit import DMToolkit
-from models.dndplayer import Player
-from models.dndnpc import NPC
-from models.dndshop import Shop
-from models.dndmonster import Monster
-from models.dnditem import Item
-from models.dndspell import Spell
+from models import Character, Shop, Monster, Item, Spell
 
 
 # @pytest.mark.skip(reason="takes too long")
@@ -32,8 +27,8 @@ class TestDMToolkit:
             assert isinstance(obj, Monster)
             assert "goblin" in obj.name.lower()
 
-    def test_DMToolkit_search_players(self, pop_db):
-        objs = DMToolkit.players(name="test")
+    def test_DMToolkit_search_characters(self, pop_db):
+        objs = DMToolkit.characters(name="test")
         for obj in objs:
             assert isinstance(obj, Player)
             assert "test" in obj.name
@@ -43,12 +38,6 @@ class TestDMToolkit:
         for obj in objs:
             assert isinstance(obj, Shop)
             assert "test" in obj.name.lower()
-
-    def test_DMToolkit_search_npcs(self, pop_db):
-        objs = DMToolkit.npcs(name="test")
-        for obj in objs:
-            assert isinstance(obj, NPC)
-            assert "test" in obj.name
 
     def test_DMToolkit_get_items(self, pop_db):
         objs = DMToolkit.items()

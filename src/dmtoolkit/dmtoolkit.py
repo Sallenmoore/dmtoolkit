@@ -9,8 +9,7 @@ from apis.openai import OpenAI
 from models import Monster
 from models import Item
 from models import Spell
-from models import Player
-from models import NPC
+from models import Character
 from models import Shop
 
 
@@ -55,17 +54,13 @@ class DMToolkit:
         return cls._query(Spell, **kwargs)
 
     @classmethod
-    def players(cls, **kwargs):
+    def characters(cls, **kwargs):
         # log(kwargs)
-        return cls._query(Player, **kwargs)
+        return cls._query(Character, **kwargs)
 
     @classmethod
     def shops(cls, **kwargs):
         return cls._query(Shop, **kwargs)
-
-    @classmethod
-    def npcs(cls, **kwargs):
-        return cls._query(NPC, **kwargs)
 
     @classmethod
     def generatenpc(cls, name=None, summary=None, generate_image=False):
@@ -167,6 +162,11 @@ class DMToolkit:
                         "description": "The character's personality traits",
                         "items": {"type": "string"},
                     },
+                    "description": {
+                        "type": "array",
+                        "description": "A physical description of the character",
+                        "items": {"type": "string"},
+                    },
                     "backstory": {
                         "type": "string",
                         "description": "The character's backstory",
@@ -221,8 +221,8 @@ class DMToolkit:
             log(e)
             raise Exception(response)
 
-        npc_data["desc"] = npc_data["backstory"]
-        npc = NPC(**npc_data)
+        npc_data["backstory"] = npc_data["backstory"]
+        npc = Character(**npc_data)
         return npc
 
     @classmethod

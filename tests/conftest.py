@@ -1,7 +1,5 @@
 import pytest
-from models.dndplayer import Player
-from models.dndnpc import NPC
-from models.dndshop import Shop
+from models import Character, Monster, Spell, Item, Shop
 
 from dotenv import load_dotenv
 
@@ -112,10 +110,12 @@ def shop():
 
 
 @pytest.fixture
-def player():
+def character():
     return {
         "name": "test",
         "age": 0,
+        "desc": "this is a test",
+        "npc": True,
         "decorations": {"avatarUrl": "test"},
         "notes": {"desc": "this is a test", "backstory": "this is a test"},
         "race": {"fullName": "test"},
@@ -267,50 +267,15 @@ def player():
 
 
 @pytest.fixture
-def npc():
-    return {
-        "name": "test",
-        "backstory": "This is a test",
-        "race": "test",
-        "class_name": "test",
-        "age": 1,
-        "hp": 1,
-        "desc": "This is a test",
-        "inventory": [
-            {
-                "name": "item a",
-                "description": "item a description",
-            },
-            {
-                "name": "item b",
-                "description": "item b description",
-            },
-        ],
-        "strength": 1,
-        "dexterity": 2,
-        "constitution": 3,
-        "wisdom": 4,
-        "intelligence": 5,
-        "charisma": 6,
-    }
-
-
-@pytest.fixture
-def pop_db(shop, player, npc):
-    dndplayer = Player(**player)
+def pop_db(shop, character):
+    dndplayer = Character(**character)
     dndplayer.save()
     dndshop = Shop(**shop)
     dndshop.save()
-    dndnpc = NPC(npc)
-    dndnpc.save()
-    data = {"player": dndplayer, "shop": dndshop, "npc": dndnpc}
+    data = {"character": dndplayer, "shop": dndshop}
     yield data
-    for p in Player.all():
-        if p.name == player["name"]:
-            p.delete()
-
-    for p in NPC.all():
-        if p.name == npc["name"]:
+    for p in Character.all():
+        if p.name == character["name"]:
             p.delete()
 
     for p in Shop.all():

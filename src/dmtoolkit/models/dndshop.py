@@ -1,6 +1,5 @@
 from autonomous.model.automodel import AutoModel
 from autonomous import log
-from .dndnpc import NPC
 import random
 from apis import OpenAI
 from autonomous.storage.cloudinarystorage import CloudinaryStorage

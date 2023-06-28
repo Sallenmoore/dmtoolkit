@@ -1,16 +1,10 @@
 import random
 
-from models.dndplayer import Player
-from models.dndnpc import NPC
-from models.dndshop import Shop
-from models.dndmonster import Monster
-from models.dnditem import Item
-from models.dndspell import Spell
+from models import Character, Shop, Monster, Item, Spell
 
 
 # @pytest.mark.skip(reason="takes too long")
 class TestDnDObject:
-
     # @pytest.mark.skip(reason="takes too long")
     def test_dndobjectfromapi_all(self):
         objs = random.sample(Item.all(), 5)

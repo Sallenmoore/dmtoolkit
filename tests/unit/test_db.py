@@ -1,6 +1,4 @@
 import pytest
-from models.dndnpc import NPC
-from models.dndshop import Shop
 from models.dndmonster import Monster
 from models.dndspell import Spell
 from models.dnditem import Item
