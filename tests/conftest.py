@@ -268,6 +268,7 @@ def character():
 
 @pytest.fixture
 def pop_db(shop, character):
+    breakpoint()
     dndplayer = Character(**character)
     dndplayer.save()
     dndshop = Shop(**shop)
