@@ -13,7 +13,7 @@ from models import Character
 from models import Shop
 
 
-class DMToolkit:
+class DMTools:
     """
     _summary_
 
