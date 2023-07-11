@@ -26,10 +26,10 @@ def monster():
         "wisdom": 8,
         "charisma": 8,
         "skills": {"stealth": 6},
-        "damage_vulnerabilities": "none",
-        "damage_resistances": "none",
-        "damage_immunities": "none",
-        "condition_immunities": "none",
+        "damage_vulnerabilities": None,
+        "damage_resistances": None,
+        "damage_immunities": None,
+        "condition_immunities": None,
         "senses": {"darkvision": 60},
         "languages": "Common, Goblin",
         "cr": 0.25,
@@ -74,6 +74,7 @@ def item():
         "img_main": "https://i.imgur.com/abcdefg.png",
         "rarity": "Rare",
         "cost": "2000 gp",
+        "type": "Weapon",
         "category": "Martial Weapons",
         "requires_attunement": True,
         "damage_dice": "2d6",
@@ -268,7 +269,6 @@ def character():
 
 @pytest.fixture
 def pop_db(shop, character):
-    breakpoint()
     dndplayer = Character(**character)
     dndplayer.save()
     dndshop = Shop(**shop)

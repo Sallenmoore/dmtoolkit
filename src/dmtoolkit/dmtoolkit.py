@@ -1,10 +1,10 @@
 import json
 import random
 from slugify import slugify
-
+import dice
 from autonomous.logger import log
 
-from apis.openai import OpenAI
+from autonomous.apis import OpenAI
 
 from models import Monster
 from models import Item
@@ -22,6 +22,10 @@ class DMToolkit:
     """
 
     LOOT_MULTIPLIER = 3
+
+    @classmethod
+    def roll_dice(roll_str):
+        return dice.roll(roll_str)
 
     @classmethod
     def updatedb(cls):
@@ -56,6 +60,16 @@ class DMToolkit:
     @classmethod
     def characters(cls, **kwargs):
         # log(kwargs)
+        return cls._query(Character, **kwargs)
+
+    @classmethod
+    def pcs(cls, **kwargs):
+        kwargs.update({"npc": False})
+        return cls._query(Character, **kwargs)
+
+    @classmethod
+    def npcs(cls, **kwargs):
+        kwargs.update({"npc": True})
         return cls._query(Character, **kwargs)
 
     @classmethod
@@ -130,14 +144,17 @@ class DMToolkit:
         ]
 
         primer = """
-        You are a D&D 5e NPC generator that creates random NPC's
+        You are a D&D 5e NPC generator that creates interesting random NPC's with complete stats and backstory
         """
         traits = ", ".join(random.sample(personality, 3))
-        prompt = f"Generate an D&D 5e NPC aged {age} years with the following personality traits: {traits} and a backstory that contains an unexpected twist and character secret"
+        if summary:
+            prompt = f"Generate an Dungeons and Dragons style NPC aged {age} years who is {summary}. Write a detailed NPC backstory that contains an unexpected twist or secret. The NPC should also have the following personality traits: {traits}"
+        else:
+            prompt = f"Generate an Dungeons and Dragons style NPC aged {age} years with the following personality traits: {traits}. Include a backstory that contains an unexpected twist or secret"
         # log(prompt)
         funcobj = {
             "name": "generate_npc",
-            "description": "Generate an NPC",
+            "description": "builds NPC data object",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -185,7 +202,7 @@ class DMToolkit:
                         "items": {"type": "string"},
                     },
                     "str": {
-                        "type": "integer",
+                        "type": "number",
                         "description": "The amount of Strength the character has from 1-20",
                     },
                     "dex": {
@@ -211,10 +228,9 @@ class DMToolkit:
                 },
             },
         }
-        funcobj["parameters"]["required"] = (
-            list(funcobj["parameters"]["properties"].keys()),
-        )
-        response = OpenAI().generate_text(prompt, primer, functions=[funcobj])
+        required = funcobj["parameters"]["properties"].keys()
+        funcobj["parameters"]["required"] = list(required)
+        response = OpenAI().generate_text(prompt, primer, functions=funcobj)
         try:
             npc_data = json.loads(response)
         except Exception as e:
@@ -232,14 +248,13 @@ class DMToolkit:
             "easy",
             "medium",
             "hard",
-            "deadly",
         ]
         loot = [
             "gold",
             "gems",
-            "magic items",
-            "misc",
-            "weapons",
+            "magic item",
+            "junk",
+            "weapon",
             "armor",
         ]
 
@@ -250,23 +265,23 @@ class DMToolkit:
         loot_type = random.choices(
             loot,
             weights=[10, 5, 3, 30, 10, 10],
-            k=difficulty[0] * DMToolkit.LOOT_MULTIPLIER,
+            k=(difficulty[0] * DMToolkit.LOOT_MULTIPLIER) + 1,
         )
-        prompt = f"Generate an appropriate D&D 5e encounter for a party of {num_players} level {level} pcs that is {difficulty[1]} and rewards the following type of loot items: {loot_type}"
+        prompt = f"Generate an appropriate Dungeons and Dragons 5e encounter for a party of {num_players} at level {level} that is {difficulty[1]} and rewards the following type of loot items: {loot_type}"
         funcobj = {
-            "name": "generate_npc",
-            "description": "Generate an NPC",
+            "name": "generate_encounter",
+            "description": "Generate an Encounter object",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "name": {
-                        "type": "string",
-                        "description": "The character's name",
-                    },
-                    "characters": {
+                    "enemies": {
                         "type": "array",
-                        "description": "The characters in the encounter",
+                        "description": "A list of enemies faced in the encounter",
                         "items": {"type": "string"},
+                    },
+                    "scenario": {
+                        "type": "string",
+                        "description": "The situation that led to the encounter from the enemy's perspective",
                     },
                     "difficulty": {
                         "type": "string",
@@ -280,10 +295,11 @@ class DMToolkit:
                 },
             },
         }
-        funcobj["parameters"]["required"] = (
-            list(funcobj["parameters"]["properties"].keys()),
+        funcobj["parameters"]["required"] = list(
+            funcobj["parameters"]["properties"].keys()
         )
-        encounter = OpenAI().generate_text(prompt, primer, functions=[funcobj])
+        # breakpoint()
+        encounter = OpenAI().generate_text(prompt, primer, functions=funcobj)
         encounter = json.loads(encounter)
         return encounter
 
@@ -294,14 +310,14 @@ class DMToolkit:
         """
         prompt = "Generate a random shop"
         funcobj = {
-            "name": "generate_npc",
-            "description": "Generate an NPC",
+            "name": "generate_shop",
+            "description": "builds an Shop model object",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "name": {
                         "type": "string",
-                        "description": "The character's name",
+                        "description": "The shop's name",
                     },
                     "shoptype": {
                         "type": "string",
@@ -313,8 +329,8 @@ class DMToolkit:
                     },
                     "inventory": {
                         "type": "array",
-                        "description": "The characters in the encounter",
-                        "inventory": {
+                        "description": "The shop's inventory of purchasable items",
+                        "items": {
                             "type": "object",
                             "properties": {
                                 "name": {
@@ -335,10 +351,10 @@ class DMToolkit:
                 },
             },
         }
-        funcobj["parameters"]["required"] = (
-            list(funcobj["parameters"]["properties"].keys()),
+        funcobj["parameters"]["required"] = list(
+            funcobj["parameters"]["properties"].keys()
         )
-        shop = OpenAI().generate_text(prompt, primer, functions=[funcobj])
+        shop = OpenAI().generate_text(prompt, primer, functions=funcobj)
         try:
             shop = json.loads(shop)
         except Exception as e:

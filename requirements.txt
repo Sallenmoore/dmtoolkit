@@ -3,11 +3,12 @@
 ##################################
 
 ##### Frameworks #####
-autonomous-app == 0.0.5
+autonomous-app == 0.1.2
 gql
 
 ##### System #####
-
+twine
+wheel
 setuptools
 python-dotenv
 
@@ -23,3 +24,7 @@ openai
 
 python-slugify
 markdown
+
+##### Misc #####
+
+dice

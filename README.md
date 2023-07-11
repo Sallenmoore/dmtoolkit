@@ -64,8 +64,6 @@ LOG_LEVEL=INFO
 
 ## Developer Notes
 
-## {.tabset}
-
 ### TODO
 
 - Auto generate API documentation

@@ -8,26 +8,23 @@ all: test clean run start
 
 CONTAINERS=$$(sudo docker ps -a -q)
 
-package:
-	rm -rf dist
+package: clean
 	python -m build
-	python -m pip install --upgrade twine
+	python -m pip install --upgrade twine wheel setuptools
 	twine check dist/*
-	twine upload -r testpypi dist/*
-	twine upload -r dist/*
-
+	twine upload dist/*
 
 updatepkgs:
-	source .venv/bin/activate; pip install --upgrade pip wheel && pip install --upgrade -r requirements.txt && pip install --upgrade -r requirements_dev.txt
+	pip install --upgrade pip wheel && pip install --upgrade -r requirements.txt && pip install --upgrade -r requirements_dev.txt
 
 ###### CLEANING #######
 
 clean:
-	rm -rf .pytest_cache
+	rm -rf .pytest_cache .coverage dist
 
 ###### TESTING #######
 
 RUNTEST?='test_'
 test: clean updatepkgs
-	source .venv/bin/activate; python -m pytest
+	python -m pytest -s -v
 

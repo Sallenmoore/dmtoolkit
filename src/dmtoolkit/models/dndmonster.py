@@ -47,9 +47,8 @@ class Monster(DnDObject):
     def update_db(cls):
         cls._update_db(cls._api.Open5eMonster)
 
-    @classmethod
     def get_image_prompt(self):
-        description = self.desc or random.choice(
+        description = self.__dict__.get("desc") or random.choice(
             [
                 "A renaissance portrait",
                 "An action movie poster",

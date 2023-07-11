@@ -1,5 +1,5 @@
 from apis import open5eapi
-from apis import OpenAI
+from autonomous.apis import OpenAI
 from db.dndorm import DnDORM
 
 from autonomous.storage.cloudinarystorage import CloudinaryStorage
@@ -37,12 +37,13 @@ class DnDObject(AutoModel):
         return f"A full color portrait of a {self.name} from Dungeons and Dragons 5e - {self.desc}"
 
     @classmethod
-    def _update_db(cls, api):
-        for updated_record in api.all():
-            if record := cls.find(slug=slugify(updated_record["name"])):
-                record.__dict__.update(updated_record)
-            else:
-                record = cls(**updated_record)
+    def _update_db(cls, api=None):
+        if api:
+            for updated_record in api.all():
+                if record := cls.find(slug=slugify(updated_record["name"])):
+                    record.__dict__.update(updated_record)
+                else:
+                    record = cls(**updated_record)
 
-            if not record.save():
-                raise Exception(f"Failed to save {record}")
+                if not record.save():
+                    raise Exception(f"Failed to save {record}")

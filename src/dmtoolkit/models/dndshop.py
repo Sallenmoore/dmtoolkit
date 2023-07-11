@@ -1,7 +1,7 @@
 from autonomous.model.automodel import AutoModel
 from autonomous import log
 import random
-from apis import OpenAI
+from autonomous.apis import OpenAI
 from autonomous.storage.cloudinarystorage import CloudinaryStorage
 
 

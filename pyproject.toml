@@ -7,7 +7,7 @@ name = "dmtoolkit"
 authors = [
     {name = "Steven A Moore", email = "samoore@binghamton.edu"},
 ]
-description = "A collection of CLI tools for D&D5e DMs."
+description = "A collection of AI based tools for D&D5e gMs."
 dynamic = ["version", "dependencies"]
 readme = "README.md"
 requires-python = ">=3.10"
@@ -35,7 +35,7 @@ where = ["src"]
 include = ["dmtoolkit*"]
 
 [tool.pytest.ini_options]
-addopts = "--cov=dmtoolkit -s -rx -l -x --log-level=INFO --ignore=src --no-cov-on-fail" #  -v  --cov-reset
+addopts = "--cov=dmtoolkit -s -rx -l -x --log-level=INFO --ignore=src -v --no-cov-on-fail" #   --cov-reset
 testpaths = [
      "tests",
 ]

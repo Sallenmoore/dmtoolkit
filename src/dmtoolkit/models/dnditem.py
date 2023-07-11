@@ -29,14 +29,6 @@ class Item(DnDObject):
     def update_db(cls):
         cls._update_db(cls._api.Open5eItem)
 
-    @classmethod
     def get_image_prompt(self):
-        description = self.desc or "displayed on a table"
-        style = random.choice(
-            [
-                "Rusted Pixel style digital art",
-                "Albrecht Dürer style photorealistic colored pencil sketch",
-                "William Blake style watercolor",
-            ]
-        )
-        return f"A full color {style} of a {self.name} from Dungeons and Dragons 5e - {description}"
+        description = self.__dict__.get("desc", "on display in the shop")
+        return f"A full color Rusted Pixel style image of an item from Dungeons and Dragons 5e called {self.name}. Additional details:  {description}"

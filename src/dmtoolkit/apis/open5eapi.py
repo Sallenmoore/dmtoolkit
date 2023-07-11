@@ -1,8 +1,9 @@
 import requests
+from autonomous import log
 
 
 class Open5e:
-    api_url = "https://api.open5e.com/"
+    api_url = "https://api.open5e.com"
 
     @classmethod
     def all(cls, endpoint=None):
@@ -15,8 +16,9 @@ class Open5e:
         return [cls._build(r) for r in results]
 
     @classmethod
-    def search(cls, term, key="search"):
-        response = requests.get(f"{cls.api_url}/?{key}={term}").json()
+    def search(cls, term, key="search", endpoint=""):
+        api_url = f"{cls.api_url}/{endpoint}"
+        response = requests.get(f"{api_url}?{key}={term}").json()
         return [cls._build(r) for r in response["results"]]
 
     @classmethod
@@ -27,7 +29,9 @@ class Open5e:
 
 
 class Open5eMonster(Open5e):
-    api_url = "https://api.open5e.com/monsters"
+    @classmethod
+    def search(cls, term, key="search"):
+        return super().search(term=term, key=key, endpoint="monsters")
 
     @classmethod
     def _build(cls, data):
@@ -59,6 +63,7 @@ class Open5eMonster(Open5e):
 
         obj["skills"] = data.get("skills")
         obj["vulnerabilities"] = data.get("damage_vulnerabilities")
+
         obj["resistances"] = data.get("damage_resistances")
         obj[
             "immunities"
@@ -78,11 +83,14 @@ class Open5eMonster(Open5e):
             for a in data["spell_list"]:
                 spell = Open5eSpell.get(url=a)
                 obj["spell_list"][spell["name"]] = spell
+        obj["desc"] = f'{obj["alignment"]} {obj["subtype"]} {obj["type"]}'
         return obj
 
 
 class Open5eSpell(Open5e):
-    api_url = "https://api.open5e.com/spells"
+    @classmethod
+    def search(cls, term, key="search"):
+        return super().search(term=term, key=key, endpoint="spells")
 
     @classmethod
     def _build(cls, data):
@@ -117,7 +125,7 @@ class Open5eItem(Open5e):
     def _build(cls, data):
         obj = {}
         obj["name"] = data["name"]
-        obj["type"] = data.get("category", data.get("type"))
+        obj["type"] = data.get("type", data.get("category"))
         obj["image"] = {"url": data.get("img_main"), "asset_id": 0, "raw": None}
         obj["rarity"] = data.get("rarity")
         obj["cost"] = data.get("cost")
@@ -130,7 +138,7 @@ class Open5eItem(Open5e):
         obj["strength_requirement"] = data.get("strength_requirement")
         obj["stealth_disadvantage"] = data.get("stealth_disadvantage")
         obj["properties"] = data.get("properties")
-        obj["desc"] = data.get("desc", "")
+        obj["desc"] = data.get("desc") or f"{obj['type']} {obj['properties']}"
         return obj
 
     @classmethod
@@ -144,5 +152,5 @@ class Open5eItem(Open5e):
     def search(cls, term, key="search"):
         results = []
         for endpoint in ["armor/", "weapons/", "magicitems/"]:
-            results += super().search(f"{cls.api_url + endpoint}?{key}={term}")
+            results += super().search(term=term, key=key, endpoint=endpoint)
         return results

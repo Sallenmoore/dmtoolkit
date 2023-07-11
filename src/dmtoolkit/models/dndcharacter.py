@@ -1,11 +1,11 @@
-from autonomous.model.automodel import AutoModel
+from .dndobject import DnDObject
 from autonomous import log
 from apis import DnDBeyondAPI
 from slugify import slugify
 from autonomous.storage.cloudinarystorage import CloudinaryStorage
 
 
-class Character(AutoModel):
+class Character(DnDObject):
     attributes = {
         "dnd_id": None,
         "npc": True,
@@ -14,7 +14,7 @@ class Character(AutoModel):
         "gender": "",
         "image": {"url": "", "asset_id": 0, "raw": None},
         "ac": 0,
-        "description": "",
+        "desc": "",
         "backstory": "",
         "gender": "",
         "personality": "",
@@ -51,9 +51,19 @@ class Character(AutoModel):
                 self.image = CloudinaryStorage().save(
                     data["image"]["url"], folder=f"dnd/players/{slugify(self.name)}"
                 )
+
             del data["image"]
 
             self.__dict__.update(data)
             # log(self)
             self.save()
         return data
+
+    def get_image_prompt(self):
+        if self.image.get("url"):
+            return f"A full color modern realism style portrait of a {self.race} character from Dungeons and Dragons aged {self.age} and described as {self.desc}"
+
+    @classmethod
+    def _update_db(cls, api=None):
+        for c in Character.search(npc=False):
+            c.updateinfo()

@@ -26,7 +26,6 @@ class Spell(DnDObject):
     def update_db(cls):
         cls._update_db(cls._api.Open5eSpell)
 
-    @classmethod
     def get_image_prompt(self):
         description = self.desc or "A magical spell"
         style = random.choice(
