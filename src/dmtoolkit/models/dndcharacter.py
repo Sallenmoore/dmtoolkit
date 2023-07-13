@@ -1,6 +1,6 @@
-from .dndobject import DnDObject
+from dmtoolkit.models.dndobject import DnDObject
 from autonomous import log
-from apis import DnDBeyondAPI
+from dmtoolkit.apis import DnDBeyondAPI
 from slugify import slugify
 from autonomous.storage.cloudinarystorage import CloudinaryStorage
 

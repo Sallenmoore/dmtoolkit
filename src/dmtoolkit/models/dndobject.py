@@ -1,7 +1,7 @@
-from apis import open5eapi
-from autonomous.apis import OpenAI
-from db.dndorm import DnDORM
+from dmtoolkit.db.dndorm import DnDORM
+from dmtoolkit.apis import open5eapi
 
+from autonomous.apis import OpenAI
 from autonomous.storage.cloudinarystorage import CloudinaryStorage
 from autonomous.model.automodel import AutoModel
 from autonomous import log
@@ -11,7 +11,6 @@ from slugify import slugify
 
 class DnDObject(AutoModel):
     _api = open5eapi
-    _orm = DnDORM
     _storage = CloudinaryStorage()
 
     @property

@@ -7,7 +7,7 @@ class Open5e:
 
     @classmethod
     def all(cls, endpoint=None):
-        endpoint = endpoint or f"{cls.api_url}"
+        endpoint = f"{cls.api_url}/{endpoint}"
         response = requests.get(endpoint).json()
         results = response["results"]
         while response.get("next"):
@@ -29,6 +29,10 @@ class Open5e:
 
 
 class Open5eMonster(Open5e):
+    @classmethod
+    def all(cls):
+        return super().all(endpoint="monsters")
+
     @classmethod
     def search(cls, term, key="search"):
         return super().search(term=term, key=key, endpoint="monsters")
@@ -89,6 +93,10 @@ class Open5eMonster(Open5e):
 
 class Open5eSpell(Open5e):
     @classmethod
+    def all(cls):
+        return super().all(endpoint="spells")
+
+    @classmethod
     def search(cls, term, key="search"):
         return super().search(term=term, key=key, endpoint="spells")
 
@@ -145,7 +153,7 @@ class Open5eItem(Open5e):
     def all(cls):
         results = []
         for endpoint in ["armor/", "weapons/", "magicitems/"]:
-            results += super().all(cls.api_url + endpoint)
+            results += super().all(endpoint)
         return results
 
     @classmethod

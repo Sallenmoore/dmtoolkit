@@ -26,5 +26,6 @@ clean:
 
 RUNTEST?='test_'
 test: clean updatepkgs
+	pip install -e .
 	python -m pytest -s -v
 

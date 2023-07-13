@@ -1,6 +1,5 @@
-from .dndobject import DnDObject
-from autonomous import logger
-import random
+from dmtoolkit.models.dndobject import DnDObject
+from autonomous import log
 import markdown
 
 
@@ -23,7 +22,7 @@ class Item(DnDObject):
     }
 
     def __init__(self, **kwargs):
-        self.desc = markdown.markdown(self.desc)
+        self.desc_md = markdown.markdown(self.desc)
 
     @classmethod
     def update_db(cls):

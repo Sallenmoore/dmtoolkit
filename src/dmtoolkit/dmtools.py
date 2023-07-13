@@ -6,11 +6,7 @@ from autonomous.logger import log
 
 from autonomous.apis import OpenAI
 
-from models import Monster
-from models import Item
-from models import Spell
-from models import Character
-from models import Shop
+from dmtoolkit.models import Monster, Item, Spell, Character, Shop
 
 
 class DMTools:
@@ -265,7 +261,7 @@ class DMTools:
         loot_type = random.choices(
             loot,
             weights=[10, 5, 3, 30, 10, 10],
-            k=(difficulty[0] * DMToolkit.LOOT_MULTIPLIER) + 1,
+            k=(difficulty[0] * DMTools.LOOT_MULTIPLIER) + 1,
         )
         prompt = f"Generate an appropriate Dungeons and Dragons 5e encounter for a party of {num_players} at level {level} that is {difficulty[1]} and rewards the following type of loot items: {loot_type}"
         funcobj = {

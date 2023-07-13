@@ -1,4 +1,4 @@
-from .dndobject import DnDObject
+from dmtoolkit.models.dndobject import DnDObject
 from autonomous import logger
 import random
 
