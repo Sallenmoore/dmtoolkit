@@ -4,7 +4,6 @@ from apis import open5eapi
 
 # @pytest.mark.skip(reason="Takes too long to run")
 class TestOpen5eapi:
-    # @pytest.mark.skip(reason="Takes too long to run")
     def test_dndmonster_build(self, monster):
         mob = open5eapi.Open5eMonster._build(monster)
         assert mob["name"] == monster["name"]
@@ -33,10 +32,7 @@ class TestOpen5eapi:
         assert mob["skills"] == monster.get("skills")
         assert mob["vulnerabilities"] == monster.get("damage_vulnerabilities")
         assert mob["resistances"] == monster.get("damage_resistances")
-        assert (
-            mob["immunities"]
-            == f"{monster['damage_immunities']}; {monster['condition_immunities']}"
-        )
+        assert mob["immunities"] == f"{monster['damage_immunities']}; {monster['condition_immunities']}"
         assert mob["senses"] == monster.get("senses")
         assert mob["languages"] == monster.get("languages")
         assert mob["challenge_rating"] == monster.get("cr")
@@ -61,7 +57,6 @@ class TestOpen5eapi:
         assert mob["name"] == monster_data["name"]
         assert mob["type"] == monster_data["type"]
 
-    # @pytest.mark.skip(reason="Takes too long to run")
     def test_dndspell_build(self, spell):
         spell_data = spell
         spell = open5eapi.Open5eSpell._build(spell)
@@ -70,7 +65,6 @@ class TestOpen5eapi:
         assert spell["desc"] == spell_data["desc"]
         assert spell["variations"] == spell_data["higher_level"]
 
-    # @pytest.mark.skip(reason="Takes too long to run")
     def test_dnditem_build(self, item):
         item_data = item
         item = open5eapi.Open5eItem._build(item_data)
@@ -98,38 +92,31 @@ class TestOpen5eapi:
             == "This magical sword has a keen edge that seems to glide effortlessly through even the toughest armor."
         )
 
-    # @pytest.mark.skip(reason="Takes too long to run")
     def test_monster_api_all(self):
         # Test that all() returns a list of monsters
         monsters = open5eapi.Open5eMonster.all()
         assert len(monsters) > 0
 
-    # @pytest.mark.skip(reason="Takes too long to run")
     def test_spell_api_all(self):
         spells = open5eapi.Open5eSpell.all()
         assert len(spells) > 0
 
-    # @pytest.mark.skip(reason="Takes too long to run")
     def test_item_api_all(self):
         items = open5eapi.Open5eItem.all()
         assert len(items) > 0
 
-    # @pytest.mark.skip(reason="Takes too long to run")
     def test_api_monster_search(self):
         monsters = open5eapi.Open5eMonster.search("goblin")
         assert len(monsters) > 00
 
-    # @pytest.mark.skip(reason="Takes too long to run")
     def test_api__spell_search(self):
         spells = open5eapi.Open5eSpell.search("magic missile")
         assert len(spells) > 0
 
-    # @pytest.mark.skip(reason="Takes too long to run")
     def test_api_item_search(self):
         items = open5eapi.Open5eItem.search("leather")
         assert len(items) > 0
 
-    # @pytest.mark.skip(reason="Takes too long to run")
     def test_api_spell_get(self):
         spell_url = "https://api.open5e.com/spells/magic-missile/"
         spell = open5eapi.Open5eSpell.get(spell_url)
@@ -145,7 +132,6 @@ class TestOpen5eapi:
             == "When you cast this spell using a spell slot of 2nd level or higher, the spell creates one more dart for each slot level above 1st."
         )
 
-    # @pytest.mark.skip(reason="Takes too long to run")
     def test_api_monster_get(self):
         monster_url = "https://api.open5e.com/monsters/aboleth/"
         monster = open5eapi.Open5eMonster.get(monster_url)
@@ -158,7 +144,6 @@ class TestOpen5eapi:
         assert monster["challenge_rating"] == 10
         assert monster["special_abilities"][0]["name"] == "Amphibious"
 
-    # @pytest.mark.skip(reason="Takes too long to run")
     def test_api_item_get(self):
         item_url = "https://api.open5e.com/magicitems/glamoured-studded-leather/"
         item = open5eapi.Open5eItem.get(item_url)

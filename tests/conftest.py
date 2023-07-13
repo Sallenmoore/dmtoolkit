@@ -55,7 +55,7 @@ def monster():
 @pytest.fixture
 def spell():
     return {
-        "name": "Magic Missile",
+        "name": "Fire Missile",
         "school": "Evocation",
         "desc": [
             "You create three glowing darts of magical force. Each dart hits a creature of your choice that you can see within range. A dart deals 1d4 + 1 force damage to its target. The darts all strike simultaneously and you can direct them to hit one creature or several."
@@ -69,7 +69,7 @@ def spell():
 @pytest.fixture
 def item():
     return {
-        "name": "Sword of Sharpness",
+        "name": "Sword of Resistance",
         "type": "Weapon",
         "img_main": "https://i.imgur.com/abcdefg.png",
         "rarity": "Rare",
@@ -164,9 +164,7 @@ def character():
         ],
         "actions": {
             "featureA": {"catA": {"name": "TestA", "snippet": "This is a smippet A"}},
-            "featureB": {
-                "catB": {"name": "TestB", "description": "This is a description B"}
-            },
+            "featureB": {"catB": {"name": "TestB", "description": "This is a description B"}},
             "featureC": {
                 "catC": {
                     "name": "TestC",
@@ -176,9 +174,7 @@ def character():
             },
         },
         "options": {
-            "featureA": {
-                "definition": {"name": "TestA", "snippet": "This is a smippet A"}
-            },
+            "featureA": {"definition": {"name": "TestA", "snippet": "This is a smippet A"}},
             "featureB": {
                 "definition": {
                     "name": "TestB",
@@ -194,9 +190,7 @@ def character():
             },
         },
         "spells": {
-            "spellA": {
-                "definition": {"name": "TestA", "snippet": "This is a snippet A"}
-            },
+            "spellA": {"definition": {"name": "TestA", "snippet": "This is a snippet A"}},
             "spellB": {
                 "definition": {
                     "name": "TestB",
@@ -268,17 +262,19 @@ def character():
 
 
 @pytest.fixture
-def pop_db(shop, character):
+def pop_db(shop, character, item, monster, spell):
     dndplayer = Character(**character)
     dndplayer.save()
     dndshop = Shop(**shop)
     dndshop.save()
+    dnditem = Item(**item)
+    dnditem.save()
+    dndmonster = Monster(**monster)
+    dndmonster.save()
+    dndspell = Spell(**spell)
+    dndspell.save()
     data = {"character": dndplayer, "shop": dndshop}
     yield data
-    for p in Character.all():
-        if p.name == character["name"]:
-            p.delete()
-
-    for p in Shop.all():
-        if p.name == shop["name"]:
-            p.delete()
+    items = Character.all() + Shop.all() + Item.all() + Monster.all() + Spell.all()
+    for p in items:
+        p.delete()

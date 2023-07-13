@@ -1,4 +1,3 @@
-from dmtoolkit.db.dndorm import DnDORM
 from dmtoolkit.apis import open5eapi
 
 from autonomous.apis import OpenAI
@@ -10,7 +9,6 @@ from slugify import slugify
 
 
 class DnDObject(AutoModel):
-    _api = open5eapi
     _storage = CloudinaryStorage()
 
     @property

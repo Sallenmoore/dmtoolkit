@@ -69,9 +69,7 @@ class Open5eMonster(Open5e):
         obj["vulnerabilities"] = data.get("damage_vulnerabilities")
 
         obj["resistances"] = data.get("damage_resistances")
-        obj[
-            "immunities"
-        ] = f"{data.get('damage_immunities', '')}; {data.get('condition_immunities', '')}"
+        obj["immunities"] = f"{data.get('damage_immunities', '')}; {data.get('condition_immunities', '')}"
 
         obj["senses"] = data.get("senses")
         obj["languages"] = data.get("languages")
