@@ -5,6 +5,7 @@ import random
 
 
 class Spell(DnDObject):
+    search_api = spell_api
     attributes = {
         "name": "",
         "image": {"url": "", "asset_id": 0, "raw": None},
@@ -22,19 +23,6 @@ class Spell(DnDObject):
         "damage_dice": "",
         "damage_type": "",
     }
-
-    @classmethod
-    def search(cls, **kwargs):
-        results = super().search(**kwargs)
-        term = list(kwargs.values())[0]
-        api_results = spell_api.search(term)
-        for r in api_results:
-            cc = filter(lambda x: r["slug"] == x.slug, results)
-            if not cc:
-                obj = cls(**r)
-                obj.save()
-                results.append(obj)
-        return results
 
     def get_image_prompt(self):
         description = self.desc or "A magical spell"

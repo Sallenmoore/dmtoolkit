@@ -10,6 +10,7 @@ from slugify import slugify
 
 class DnDObject(AutoModel):
     _storage = CloudinaryStorage()
+    search_api = None
 
     @property
     def slug(self):
@@ -20,6 +21,20 @@ class DnDObject(AutoModel):
             folder = f"dnd/{self.__class__.__name__.lower()}s/{self.slug}"
             self.image = self._storage.save(self.image["raw"], folder=folder)
         return super().save()
+
+    @classmethod
+    def search(cls, **kwargs):
+        results = super().search(**kwargs)
+        if cls.search_api:
+            names = [obj.name for obj in results]
+            api_results = cls.search_api.search(list(kwargs.values()))
+            for obj in api_results:
+                if obj["name"] not in names:
+                    o = cls(**obj)
+                    o.save()
+                    results.append(o)
+                    names.append(o.name)
+        return results
 
     def generate_image(self):
         resp = OpenAI().generate_image(
@@ -32,15 +47,3 @@ class DnDObject(AutoModel):
 
     def get_image_prompt(self):
         return f"A full color portrait of a {self.name} from Dungeons and Dragons 5e - {self.desc}"
-
-    @classmethod
-    def _update_db(cls, api=None):
-        if api:
-            for updated_record in api.all():
-                if record := cls.find(slug=slugify(updated_record["name"])):
-                    record.__dict__.update(updated_record)
-                else:
-                    record = cls(**updated_record)
-
-                if not record.save():
-                    raise Exception(f"Failed to save {record}")

@@ -48,9 +48,7 @@ class Character(DnDObject):
                 self.pk = results["pk"]
 
             if data["image"]["url"] and data["image"]["url"] != self.image.get("url"):
-                self.image = CloudinaryStorage().save(
-                    data["image"]["url"], folder=f"dnd/players/{slugify(self.name)}"
-                )
+                self.image = CloudinaryStorage().save(data["image"]["url"], folder=f"dnd/players/{slugify(self.name)}")
 
             del data["image"]
 
@@ -62,8 +60,3 @@ class Character(DnDObject):
     def get_image_prompt(self):
         if self.image.get("url"):
             return f"A full color modern realism style portrait of a {self.race} character from Dungeons and Dragons aged {self.age} and described as {self.desc}"
-
-    @classmethod
-    def _update_db(cls, api=None):
-        for c in Character.search(npc=False):
-            c.updateinfo()

@@ -10,85 +10,6 @@ def load_env():
 
 
 @pytest.fixture
-def monster():
-    return {
-        "name": "Goblin",
-        "type": "humanoid",
-        "size": "Small",
-        "alignment": "neutral evil",
-        "armor_class": 15,
-        "hit_points": 7,
-        "speed": {"walk": 30},
-        "strength": 8,
-        "dexterity": 14,
-        "constitution": 10,
-        "intelligence": 10,
-        "wisdom": 8,
-        "charisma": 8,
-        "skills": {"stealth": 6},
-        "damage_vulnerabilities": None,
-        "damage_resistances": None,
-        "damage_immunities": None,
-        "condition_immunities": None,
-        "senses": {"darkvision": 60},
-        "languages": "Common, Goblin",
-        "cr": 0.25,
-        "actions": [
-            {
-                "name": "Scimitar",
-                "desc": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) slashing damage.",
-                "attack_bonus": 4,
-                "damage_dice": "1d6",
-                "damage_bonus": 2,
-            },
-            {
-                "name": "Shortbow",
-                "desc": "Ranged Weapon Attack: +4 to hit, range 80/320 ft., one target. Hit: 5 (1d6 + 2) piercing damage.",
-                "attack_bonus": 4,
-                "damage_dice": "1d6",
-                "damage_bonus": 2,
-            },
-        ],
-    }
-
-
-@pytest.fixture
-def spell():
-    return {
-        "name": "Fire Missile",
-        "school": "Evocation",
-        "desc": [
-            "You create three glowing darts of magical force. Each dart hits a creature of your choice that you can see within range. A dart deals 1d4 + 1 force damage to its target. The darts all strike simultaneously and you can direct them to hit one creature or several."
-        ],
-        "higher_level": [
-            "When you cast this spell using a spell slot of 2nd level or higher, the spell creates one more dart for each slot level above 1st."
-        ],
-    }
-
-
-@pytest.fixture
-def item():
-    return {
-        "name": "Sword of Resistance",
-        "type": "Weapon",
-        "img_main": "https://i.imgur.com/abcdefg.png",
-        "rarity": "Rare",
-        "cost": "2000 gp",
-        "type": "Weapon",
-        "category": "Martial Weapons",
-        "requires_attunement": True,
-        "damage_dice": "2d6",
-        "damage_type": "Slashing",
-        "weight": "6 lb.",
-        "ac_string": None,
-        "strength_requirement": 15,
-        "stealth_disadvantage": True,
-        "properties": ["Finesse", "Versatile (1d8)"],
-        "desc": "This magical sword has a keen edge that seems to glide effortlessly through even the toughest armor.",
-    }
-
-
-@pytest.fixture
 def shop():
     return {
         "name": "test",
@@ -262,17 +183,17 @@ def character():
 
 
 @pytest.fixture
-def pop_db(shop, character, item, monster, spell):
+def pop_db(shop, character):
+    items = Character.all() + Shop.all() + Item.all() + Monster.all() + Spell.all()
+    for p in items:
+        p.delete()
     dndplayer = Character(**character)
     dndplayer.save()
     dndshop = Shop(**shop)
     dndshop.save()
-    dnditem = Item(**item)
-    dnditem.save()
-    dndmonster = Monster(**monster)
-    dndmonster.save()
-    dndspell = Spell(**spell)
-    dndspell.save()
+    Monster.search(name="goblin")
+    Item.search(name="resistance")
+    Spell.search(name="fire")
     data = {"character": dndplayer, "shop": dndshop}
     yield data
     items = Character.all() + Shop.all() + Item.all() + Monster.all() + Spell.all()

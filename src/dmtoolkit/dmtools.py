@@ -233,7 +233,6 @@ class DMTools:
             log(e)
             raise Exception(response)
 
-        npc_data["backstory"] = npc_data["backstory"]
         npc = Character(**npc_data)
         return npc
 

@@ -16,10 +16,14 @@ class Open5e:
         return [cls._build(r) for r in results]
 
     @classmethod
-    def search(cls, term, key="search", endpoint=""):
-        api_url = f"{cls.api_url}/{endpoint}"
-        response = requests.get(f"{api_url}?{key}={term}").json()
-        return [cls._build(r) for r in response["results"]]
+    def search(cls, terms, key="search", endpoint=""):
+        if not isinstance(terms, list):
+            terms = [terms]
+
+        for term in terms:
+            api_url = f"{cls.api_url}/{endpoint}"
+            response = requests.get(f"{api_url}?{key}={term}").json()
+            return [cls._build(r) for r in response["results"]]
 
     @classmethod
     def get(cls, url=None):
@@ -35,13 +39,13 @@ class Open5eMonster(Open5e):
 
     @classmethod
     def search(cls, term, key="search"):
-        return super().search(term=term, key=key, endpoint="monsters")
+        return super().search(terms=term, key=key, endpoint="monsters")
 
     @classmethod
     def _build(cls, data):
         obj = {}
         obj["name"] = data["name"]
-        obj["type"] = data["type"]
+        obj["type"] = data.get("type")
         obj["image"] = {"url": data.get("img_main"), "asset_id": 0, "raw": None}
         obj["size"] = data.get("size")
         obj["subtype"] = data.get("subtype")
@@ -96,7 +100,7 @@ class Open5eSpell(Open5e):
 
     @classmethod
     def search(cls, term, key="search"):
-        return super().search(term=term, key=key, endpoint="spells")
+        return super().search(terms=term, key=key, endpoint="spells")
 
     @classmethod
     def _build(cls, data):
@@ -158,5 +162,5 @@ class Open5eItem(Open5e):
     def search(cls, term, key="search"):
         results = []
         for endpoint in ["armor/", "weapons/", "magicitems/"]:
-            results += super().search(term=term, key=key, endpoint=endpoint)
+            results += super().search(terms=term, key=key, endpoint=endpoint)
         return results
