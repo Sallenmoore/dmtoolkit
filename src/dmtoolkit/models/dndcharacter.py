@@ -59,4 +59,4 @@ class Character(DnDObject):
 
     def get_image_prompt(self):
         if self.image.get("url"):
-            return f"A full color modern realism style portrait of a {self.race} character from Dungeons and Dragons aged {self.age} and described as {self.desc}"
+            return f"A full color animated style portrait of a {self.race} character from Dungeons and Dragons aged {self.age} and described as {self.desc}"

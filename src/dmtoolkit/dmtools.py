@@ -3,9 +3,7 @@ import random
 from slugify import slugify
 import dice
 from autonomous.logger import log
-
 from autonomous.apis import OpenAI
-
 from dmtoolkit.models import Monster, Item, Spell, Character, Shop
 
 
@@ -175,7 +173,7 @@ class DMTools:
                         "description": "The character's personality traits",
                         "items": {"type": "string"},
                     },
-                    "description": {
+                    "desc": {
                         "type": "array",
                         "description": "A physical description of the character",
                         "items": {"type": "string"},
@@ -290,9 +288,7 @@ class DMTools:
                 },
             },
         }
-        funcobj["parameters"]["required"] = list(
-            funcobj["parameters"]["properties"].keys()
-        )
+        funcobj["parameters"]["required"] = list(funcobj["parameters"]["properties"].keys())
         # breakpoint()
         encounter = OpenAI().generate_text(prompt, primer, functions=funcobj)
         encounter = json.loads(encounter)
@@ -346,9 +342,7 @@ class DMTools:
                 },
             },
         }
-        funcobj["parameters"]["required"] = list(
-            funcobj["parameters"]["properties"].keys()
-        )
+        funcobj["parameters"]["required"] = list(funcobj["parameters"]["properties"].keys())
         shop = OpenAI().generate_text(prompt, primer, functions=funcobj)
         try:
             shop = json.loads(shop)
@@ -356,9 +350,7 @@ class DMTools:
             log(e)
             return None
         else:
-            shopowner = cls.generatenpc(
-                summary=f"Owner of {shop['name']}, a {shop['shoptype']} shop."
-            )
+            shopowner = cls.generatenpc(summary=f"Owner of {shop['name']}, a {shop['shoptype']} shop.")
             shopowner.save()
             shop["owner"] = shopowner
             shop_obj = Shop(**shop)
