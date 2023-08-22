@@ -4,7 +4,7 @@ from slugify import slugify
 import dice
 from autonomous.logger import log
 from autonomous.apis import OpenAI
-from dmtoolkit.models import Monster, Item, Spell, Character, Shop
+from dmtoolkit.models import Monster, Item, Spell, Character, Player, Shop
 
 
 class DMTools:
@@ -72,7 +72,7 @@ class DMTools:
 
     @classmethod
     def generatenpc(cls, name=None, summary=None, generate_image=False):
-        age = random.randint(15, 100)
+        age = random.randint(15, 55)
         personality = [
             "shy",
             "outgoing",
@@ -137,14 +137,15 @@ class DMTools:
             "unfriendly",
         ]
 
+        gender = random.choices(["male", "female", "non-binary"], weights=[5, 5, 1], k=1)[0]
         primer = """
         You are a D&D 5e NPC generator that creates interesting random NPC's with complete stats and backstory
         """
         traits = ", ".join(random.sample(personality, 3))
         if summary:
-            prompt = f"Generate an Dungeons and Dragons style NPC aged {age} years who is {summary}. Write a detailed NPC backstory that contains an unexpected twist or secret. The NPC should also have the following personality traits: {traits}"
+            prompt = f"Generate an Dungeons and Dragons style {gender} NPC aged {age} years who is {summary}. Write a detailed NPC backstory that contains an unexpected twist or secret. The NPC should also have the following personality traits: {traits}"
         else:
-            prompt = f"Generate an Dungeons and Dragons style NPC aged {age} years with the following personality traits: {traits}. Include a backstory that contains an unexpected twist or secret"
+            prompt = f"Generate an Dungeons and Dragons style {gender} NPC aged {age} years with the following personality traits: {traits}. Include a backstory that contains an unexpected twist or secret"
         # log(prompt)
         funcobj = {
             "name": "generate_npc",

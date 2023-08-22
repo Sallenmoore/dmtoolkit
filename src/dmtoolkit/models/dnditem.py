@@ -27,5 +27,5 @@ class Item(DnDObject):
         self.desc_md = markdown.markdown(self.desc)
 
     def get_image_prompt(self):
-        description = self.__dict__.get("desc", "on display in the shop")
-        return f"A full color Rusted Pixel style image of an item from Dungeons and Dragons 5e called {self.name}. Additional details:  {description}"
+        description = self.desc or "in a display case"
+        return f"A full color image in the style of Albrecht Dürer of an item called a {self.name} from Dungeons and Dragons 5e. Additional details:  {description}"

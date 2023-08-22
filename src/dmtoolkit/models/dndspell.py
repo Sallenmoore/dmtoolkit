@@ -28,9 +28,9 @@ class Spell(DnDObject):
         description = self.desc or "A magical spell"
         style = random.choice(
             [
-                "The Rusted Pixel style digital",
+                "The Rusted Pixel style digital image",
                 "Albrecht Dürer style photorealistic pencil sketch",
                 "William Blake style watercolor",
             ]
         )
-        return f"A full color {style} of a {self.name} from Dungeons and Dragons 5e - {description}"
+        return f"A full color {style} of the {self.name} spell in action from Dungeons and Dragons 5e - {description}"

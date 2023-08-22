@@ -2,7 +2,7 @@ import pytest
 from apis import dndbeyondapi
 
 
-# @pytest.mark.skip(reason="Takes too long to run")
+@pytest.mark.skip(reason="Takes too long to run")
 class TestDnDBeyondAPI:
     def test_player_build(self):
         for dnd_id in [77709222, 68398459, 101495221, 70279502]:

@@ -56,8 +56,8 @@ class Monster(DnDObject):
         style = random.choice(
             [
                 "The Rusted Pixel style digital",
-                "Albrecht Dürer style photorealistic colored pencil sketch",
+                "Albrecht Dürer style photorealistic colored pencil sketched",
                 "William Blake style watercolor",
             ]
         )
-        return f"A full color {style} portrait of a {self.name} from Dungeons and Dragons 5e - {description}"
+        return f"A full color {style} portrait of a {self.name} monster in action from Dungeons and Dragons 5e - {description}"

@@ -3,13 +3,14 @@ from autonomous import log
 from dmtoolkit.apis import DnDBeyondAPI
 from slugify import slugify
 from autonomous.storage.cloudinarystorage import CloudinaryStorage
+import random
 
 
 class Character(DnDObject):
     attributes = {
-        "dnd_id": None,
-        "npc": True,
         # character traits
+        "npc": True,
+        "canon": False,
         "name": "",
         "gender": "",
         "image": {"url": "", "asset_id": 0, "raw": None},
@@ -37,6 +38,14 @@ class Character(DnDObject):
         "resistances": [],
     }
 
+    def get_image_prompt(self):
+        style = ["Italian Renaissance", "John Singer Sargent", "James Tissot"]
+        return f"A full color portrait in the style of {random.choice(style)} of a {self.race} character from Dungeons and Dragons aged {self.age} and described as {self.desc}"
+
+
+class Player(Character):
+    attributes = Character.attributes | {"dnd_id": None, "npc": False}
+
     def updateinfo(self, **kwargs):
         if not self.dnd_id:
             log("Player must have a dnd_id")
@@ -56,7 +65,3 @@ class Character(DnDObject):
             # log(self)
             self.save()
         return data
-
-    def get_image_prompt(self):
-        if self.image.get("url"):
-            return f"A full color animated style portrait of a {self.race} character from Dungeons and Dragons aged {self.age} and described as {self.desc}"

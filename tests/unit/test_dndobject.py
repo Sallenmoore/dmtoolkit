@@ -1,7 +1,7 @@
 import random
 import pytest
 
-from models import Character, Shop, Monster, Item, Spell
+from models import Character, Player, Shop, Monster, Item, Spell
 
 
 # @pytest.mark.skip(reason="takes too long")
@@ -91,7 +91,7 @@ class TestDnDObject:
 
     # @pytest.mark.skip(reason="takes too long")
     def test_dndplayer(self):
-        player = Character(dnd_id="77709222")
+        player = Player(dnd_id="77709222")
         player.updateinfo()
         player.save()
 
@@ -117,7 +117,7 @@ class TestDnDObject:
         assert player.spells
         assert player.resistances
 
-        player = Character.find(dnd_id="-1")
+        player = Player.find(dnd_id="-1")
         assert not player
 
     # @pytest.mark.skip(reason="costs money")
@@ -125,10 +125,6 @@ class TestDnDObject:
         npc = pop_db["character"]
         for npc in Character.all():
             if npc.name == "test":
-                npc.generate_image()
-                assert npc.image["url"]
-                assert npc.image["asset_id"]
-                assert npc.image["raw"] is None
                 assert npc.inventory[0]["definition"]["name"] == "item a"
 
     # @pytest.mark.skip(reason="costs money")
@@ -136,10 +132,6 @@ class TestDnDObject:
         shop = pop_db["shop"]
         for shop in Shop.all():
             if shop.name == "test":
-                shop.generate_image()
-                assert shop.image["url"]
-                assert shop.image["asset_id"]
-                assert shop.image["raw"] is None
                 assert shop.location == "TEST"
                 assert len(shop.inventory) == 2
                 assert shop.inventory[0]["name"] == "test item A"

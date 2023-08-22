@@ -26,8 +26,6 @@ class Shop(AutoModel):
         self.save()
 
     def get_image_prompt(self):
-        description = self.desc or "A simple shop with wooden counters and shelves."
-        style = random.choice(
-            ["pixar style 3d image", "colored pencil sketch", "watercolor"]
-        )
-        return f"A full color {style} of a fantasy world merchant shop called {self.name} with the following description: {description}"
+        description = self.desc or "A simple general goods shop with wooden counters and shelves."
+
+        return f"A full color interior image of a medieval fantasy merchant shop called {self.name} with the following description: {description}"

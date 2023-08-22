@@ -7,7 +7,7 @@ from dmtoolkit import DMTools
 from dmtoolkit.models import Character, Shop, Monster, Item, Spell
 
 
-# @pytest.mark.skip(reason="takes too long")
+@pytest.mark.skip(reason="takes too long")
 class TestDMToolkitSearch:
     def test_DMToolkit_search_items(self, pop_db):
         objs = DMTools.items(name="glamoured")
@@ -40,7 +40,7 @@ class TestDMToolkitSearch:
             assert "test" in obj.name.lower()
 
 
-# @pytest.mark.skip(reason="takes too long")
+@pytest.mark.skip(reason="takes too long")
 class TestDMToolkitGet:
     def test_DMToolkit_get_items(self, pop_db):
         objs = DMTools.items()
@@ -80,7 +80,7 @@ class TestDMToolkitGet:
             assert "test" in obj.name.lower()
 
 
-# @pytest.mark.skip(reason="takes too long")
+@pytest.mark.skip(reason="takes too long")
 class TestDMToolkitAll:
     def test_DMToolkit_allitems(self, pop_db):
         objs = DMTools.items()

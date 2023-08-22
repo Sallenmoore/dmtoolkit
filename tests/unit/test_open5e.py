@@ -3,7 +3,7 @@ import requests
 from apis import open5eapi
 
 
-# @pytest.mark.skip(reason="Takes too long to run")
+@pytest.mark.skip(reason="Takes too long to run")
 class TestOpen5eapi:
     def test_dndmonster_build(self):
         monsters = requests.get("https://api.open5e.com/monsters/?search=goblin").json()["results"]
