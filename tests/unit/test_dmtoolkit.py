@@ -105,10 +105,12 @@ class TestDMToolkitAll:
 
 @pytest.mark.skip(reason="takes too long")
 class TestDMToolkitGenerate:
+    @pytest.mark.skip(reason="takes too long")
     def test_DMToolkit_randomnpc(self):
         npc = DMTools.generatenpc()
         assert npc.name
 
+    @pytest.mark.skip(reason="takes too long")
     def test_DMToolkit_randomencounter(self):
         encounter = DMTools.generateencounter()
         assert encounter["difficulty"]

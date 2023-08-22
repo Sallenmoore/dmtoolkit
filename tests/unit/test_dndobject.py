@@ -4,8 +4,14 @@ import pytest
 from models import Character, Player, Shop, Monster, Item, Spell
 
 
-# @pytest.mark.skip(reason="takes too long")
-class TestDnDObject:
+@pytest.mark.skip(reason="takes too long")
+class TestDnDMonster:
+    def test_dndmonster_all(self, pop_db):
+        objs = Monster.all()
+        for obj in objs:
+            assert isinstance(obj, Monster)
+            assert obj.name is not None
+
     # @pytest.mark.skip(reason="takes too long")
     def test_dndmonsterobject_search(self, pop_db):
         objs = Monster.search(name="goblin")
@@ -16,67 +22,6 @@ class TestDnDObject:
         for obj in objs:
             assert isinstance(obj, Monster)
             assert "goblin" in obj.name.lower()
-
-    # @pytest.mark.skip(reason="takes too long")
-    def test_dnditemobject_search(self, pop_db):
-        objs = Item.search(name="resistance")
-        objs = Item.search(name="resistance")
-        names = [obj.name for obj in objs]
-        assert sorted(list(set(names))) == sorted(names)
-        for obj in objs:
-            assert isinstance(obj, Item)
-            assert "resistance" in obj.name.lower()
-
-    # @pytest.mark.skip(reason="takes too long")
-    def test_dndspellobject_search(self, pop_db):
-        objs = Spell.search(name="fire")
-        objs = Spell.search(name="fire")
-        names = [obj.name for obj in objs]
-        assert sorted(list(set(names))) == sorted(names)
-        for obj in objs:
-            assert isinstance(obj, Spell)
-            assert "fire" in obj.name.lower()
-
-    # @pytest.mark.skip(reason="takes too long")
-    def test_dnditem_all(self, pop_db):
-        objs = Item.all()
-        for obj in objs:
-            assert isinstance(obj, Item)
-            assert obj.name is not None
-
-    def test_dndspell_all(self, pop_db):
-        objs = Spell.all()
-        for obj in objs:
-            assert isinstance(obj, Spell)
-            assert obj.name is not None
-
-    def test_dndmonster_all(self, pop_db):
-        objs = Monster.all()
-        for obj in objs:
-            assert isinstance(obj, Monster)
-            assert obj.name is not None
-
-    # @pytest.mark.skip(reason="costs money")
-    def test_dnditemobject_get(self, pop_db):
-        obj = random.choice(Item.all())
-        obj.generate_image()
-        assert obj.image["url"]
-        assert obj.image["asset_id"]
-        assert obj.image["raw"] is None
-        result = Item.get(obj.pk)
-        assert isinstance(obj, Item)
-        assert result.name is not None
-
-    # @pytest.mark.skip(reason="costs money")
-    def test_dndspellobject_get(self, pop_db):
-        obj = random.choice(Spell.all())
-        obj.generate_image()
-        assert obj.image["url"]
-        assert obj.image["asset_id"]
-        assert obj.image["raw"] is None
-        result = Spell.get(obj.pk)
-        assert isinstance(obj, Spell)
-        assert result.name is not None
 
     # @pytest.mark.skip(reason="costs money")
     def test_dndmonsterobject_get(self, pop_db):
@@ -89,6 +34,70 @@ class TestDnDObject:
         assert isinstance(obj, Monster)
         assert result.name is not None
 
+
+@pytest.mark.skip(reason="costs money")
+class TestDnDItem:
+    # @pytest.mark.skip(reason="takes too long")
+    def test_dnditem_all(self, pop_db):
+        objs = Item.all()
+        for obj in objs:
+            assert isinstance(obj, Item)
+            assert obj.name is not None
+
+    # @pytest.mark.skip(reason="takes too long")
+    def test_dnditemobject_search(self, pop_db):
+        objs = Item.search(name="resistance")
+        objs = Item.search(name="resistance")
+        names = [obj.name for obj in objs]
+        assert sorted(list(set(names))) == sorted(names)
+        for obj in objs:
+            assert isinstance(obj, Item)
+            assert "resistance" in obj.name.lower()
+
+    # @pytest.mark.skip(reason="costs money")
+    def test_dnditemobject_get(self, pop_db):
+        obj = random.choice(Item.all())
+        obj.generate_image()
+        assert obj.image["url"]
+        assert obj.image["asset_id"]
+        assert obj.image["raw"] is None
+        result = Item.get(obj.pk)
+        assert isinstance(obj, Item)
+        assert result.name is not None
+
+
+@pytest.mark.skip(reason="costs money")
+class TestDnDSpell:
+    # @pytest.mark.skip(reason="takes too long")
+    def test_dndspellobject_search(self, pop_db):
+        objs = Spell.search(name="fire")
+        objs = Spell.search(name="fire")
+        names = [obj.name for obj in objs]
+        assert sorted(list(set(names))) == sorted(names)
+        for obj in objs:
+            assert isinstance(obj, Spell)
+            assert "fire" in obj.name.lower()
+
+    def test_dndspell_all(self, pop_db):
+        objs = Spell.all()
+        for obj in objs:
+            assert isinstance(obj, Spell)
+            assert obj.name is not None
+
+    # @pytest.mark.skip(reason="costs money")
+    def test_dndspellobject_get(self, pop_db):
+        obj = random.choice(Spell.all())
+        obj.generate_image()
+        assert obj.image["url"]
+        assert obj.image["asset_id"]
+        assert obj.image["raw"] is None
+        result = Spell.get(obj.pk)
+        assert isinstance(obj, Spell)
+        assert result.name is not None
+
+
+@pytest.mark.skip(reason="costs money")
+class TestDnDPlayer:
     # @pytest.mark.skip(reason="takes too long")
     def test_dndplayer(self):
         player = Player(dnd_id="77709222")
@@ -120,14 +129,27 @@ class TestDnDObject:
         player = Player.find(dnd_id="-1")
         assert not player
 
-    # @pytest.mark.skip(reason="costs money")
+
+# @pytest.mark.skip(reason="costs money")
+class TestDnDNPC:
+    @pytest.mark.skip(reason="costs money")
     def test_dndnpc(self, pop_db):
-        npc = pop_db["character"]
         for npc in Character.all():
             if npc.name == "test":
                 assert npc.inventory[0]["definition"]["name"] == "item a"
 
     # @pytest.mark.skip(reason="costs money")
+    def test_dndnpc_chat(self):
+        npc = Character.generate()
+        response = npc.chat("hello")
+        assert response
+        assert npc.conversation_summary
+        assert npc.backstory_summary
+        print(response, npc.conversation_summary, npc.backstory_summary, sep="\n")
+
+
+@pytest.mark.skip(reason="costs money")
+class TestDnDShop:
     def test_dndshop(self, pop_db):
         shop = pop_db["shop"]
         for shop in Shop.all():

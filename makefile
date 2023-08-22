@@ -24,8 +24,13 @@ clean:
 
 ###### TESTING #######
 
-RUNTEST?='test_'
+RUNTEST='test_'
 test: clean updatepkgs
+	pip install -e .
+	python -m pytest -s -v -k $(RUNTEST)
+
+RUNTEST?='test_'
+tests: clean updatepkgs
 	pip install -e .
 	python -m pytest -s -v
 
