@@ -1,13 +1,13 @@
-import pytest
 import random
 
+import pytest
 from autonomous import log
 
 from dmtoolkit import DMTools
-from dmtoolkit.models import Character, Shop, Monster, Item, Spell
+from dmtoolkit.models import Character, Item, Monster, Shop, Spell
 
 
-@pytest.mark.skip(reason="takes too long")
+# @pytest.mark.skip(reason="takes too long")
 class TestDMToolkitSearch:
     def test_DMToolkit_search_items(self, pop_db):
         objs = DMTools.items(name="glamoured")
@@ -40,7 +40,7 @@ class TestDMToolkitSearch:
             assert "test" in obj.name.lower()
 
 
-@pytest.mark.skip(reason="takes too long")
+# @pytest.mark.skip(reason="takes too long")
 class TestDMToolkitGet:
     def test_DMToolkit_get_items(self, pop_db):
         objs = DMTools.items()
@@ -80,7 +80,7 @@ class TestDMToolkitGet:
             assert "test" in obj.name.lower()
 
 
-@pytest.mark.skip(reason="takes too long")
+# @pytest.mark.skip(reason="takes too long")
 class TestDMToolkitAll:
     def test_DMToolkit_allitems(self, pop_db):
         objs = DMTools.items()
@@ -103,14 +103,12 @@ class TestDMToolkitAll:
         assert len(objs) > 0
 
 
-@pytest.mark.skip(reason="takes too long")
+# @pytest.mark.skip(reason="takes too long")
 class TestDMToolkitGenerate:
-    @pytest.mark.skip(reason="takes too long")
     def test_DMToolkit_randomnpc(self):
         npc = DMTools.generatenpc()
         assert npc.name
 
-    @pytest.mark.skip(reason="takes too long")
     def test_DMToolkit_randomencounter(self):
         encounter = DMTools.generateencounter()
         assert encounter["difficulty"]
@@ -120,7 +118,7 @@ class TestDMToolkitGenerate:
         assert shop.name
 
 
-@pytest.mark.skip(reason="takes too long")
+# @pytest.mark.skip(reason="takes too long")
 class TestDMToolkitGenerateImage:
     def test_DMToolkit_npc_image_generate(self):
         npc = DMTools.generatenpc()

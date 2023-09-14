@@ -39,7 +39,7 @@ class Character(DnDObject):
         "spells": {},
         "resistances": [],
         "chats": [],
-        "conversation_summary": "",
+        "conversation_summary": {"summary": "", "message": "", "response": ""},
         "backstory_summary": "",
     }
 
@@ -62,14 +62,14 @@ DESCRIPTION: {self.desc}
 
 BACKSTORY: {self.backstory_summary}
 """
-        if self.conversation_summary:
+        if self.conversation_summary["summary"]:
             prompt += f"""
-CONTEXT: {self.conversation_summary}
+CONTEXT: {self.conversation_summary['summary']}
 """
         prompt += """
 Respond to the player's message below as the above described character
         """
-        if self.conversation_summary:
+        if self.conversation_summary["summary"]:
             prompt += "using the CONTEXT as a starting point"
         prompt += f"""
 {message}
@@ -77,8 +77,10 @@ Respond to the player's message below as the above described character
         response = OpenAI().generate_text(prompt, primer)
 
         primer = "As an expert AI in D&D Worldbuilding as well, read the following dialogue. The first paragraph contains the context of the conversation, followed by the Player's message and then the NPC's response. Summarize into a concise paragraph, creating a readable summary that could help a person understand the main points of the conversation. Avoid unnecessary details."
-        updated_summary = f"Previous conversation:\n{self.conversation_summary}\n\nPlayer Message:\n{message}\n\nNPC Response:\n{response}"
-        self.conversation_summary = OpenAI().summarize_text(updated_summary, primer=primer)
+        updated_summary = f"Previous conversation:\n{self.conversation_summary['summary']}\n\nPlayer Message:\n{self.conversation_summary['message']}\n\nNPC Response:\n{self.conversation_summary['response']}"
+        self.conversation_summary["summary"] = OpenAI().summarize_text(updated_summary, primer=primer)
+        self.conversation_summary["message"] = message
+        self.conversation_summary["response"] = response
         self.save()
         return response
 
@@ -244,7 +246,7 @@ Respond to the player's message below as the above described character
             log(e)
             raise Exception(response)
 
-        npc = Character(**npc_data)
+        npc = cls(**npc_data)
         return npc
 
 

@@ -4,7 +4,7 @@ import pytest
 from models import Character, Player, Shop, Monster, Item, Spell
 
 
-@pytest.mark.skip(reason="takes too long")
+# @pytest.mark.skip(reason="takes too long")
 class TestDnDMonster:
     def test_dndmonster_all(self, pop_db):
         objs = Monster.all()
@@ -35,7 +35,7 @@ class TestDnDMonster:
         assert result.name is not None
 
 
-@pytest.mark.skip(reason="costs money")
+# @pytest.mark.skip(reason="costs money")
 class TestDnDItem:
     # @pytest.mark.skip(reason="takes too long")
     def test_dnditem_all(self, pop_db):
@@ -66,7 +66,7 @@ class TestDnDItem:
         assert result.name is not None
 
 
-@pytest.mark.skip(reason="costs money")
+# @pytest.mark.skip(reason="costs money")
 class TestDnDSpell:
     # @pytest.mark.skip(reason="takes too long")
     def test_dndspellobject_search(self, pop_db):
@@ -96,7 +96,7 @@ class TestDnDSpell:
         assert result.name is not None
 
 
-@pytest.mark.skip(reason="costs money")
+# @pytest.mark.skip(reason="costs money")
 class TestDnDPlayer:
     # @pytest.mark.skip(reason="takes too long")
     def test_dndplayer(self):
@@ -132,13 +132,11 @@ class TestDnDPlayer:
 
 # @pytest.mark.skip(reason="costs money")
 class TestDnDNPC:
-    @pytest.mark.skip(reason="costs money")
     def test_dndnpc(self, pop_db):
         for npc in Character.all():
             if npc.name == "test":
                 assert npc.inventory[0]["definition"]["name"] == "item a"
 
-    # @pytest.mark.skip(reason="costs money")
     def test_dndnpc_chat(self):
         npc = Character.generate()
         response = npc.chat("hello")
@@ -148,7 +146,7 @@ class TestDnDNPC:
         print(response, npc.conversation_summary, npc.backstory_summary, sep="\n")
 
 
-@pytest.mark.skip(reason="costs money")
+# @pytest.mark.skip(reason="costs money")
 class TestDnDShop:
     def test_dndshop(self, pop_db):
         shop = pop_db["shop"]
