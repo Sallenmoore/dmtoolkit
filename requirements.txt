@@ -4,7 +4,6 @@
 
 ##### Frameworks #####
 autonomous-app >= 0.1.24
-gql
 
 ##### System #####
 twine

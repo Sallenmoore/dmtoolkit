@@ -1,7 +1,7 @@
 import random
-import pytest
 
-from models import Character, Player, Shop, Monster, Item, Spell
+import pytest
+from models import Character, Item, Monster, Shop, Spell
 
 
 # @pytest.mark.skip(reason="takes too long")
@@ -100,10 +100,8 @@ class TestDnDSpell:
 class TestDnDPlayer:
     # @pytest.mark.skip(reason="takes too long")
     def test_dndplayer(self):
-        player = Player(dnd_id="77709222")
-        player.updateinfo()
-        player.save()
-
+        player = Character(dnd_beyond_id="77709222")
+        player.dndbeyond_updates()
         assert player.dnd_id == "77709222"
         assert player.name
         assert player.image
@@ -126,7 +124,7 @@ class TestDnDPlayer:
         assert player.spells
         assert player.resistances
 
-        player = Player.find(dnd_id="-1")
+        player = Character.find(dnd_id="-1")
         assert not player
 
 

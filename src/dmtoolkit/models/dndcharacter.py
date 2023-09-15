@@ -1,11 +1,13 @@
-from dmtoolkit.models.dndobject import DnDObject
-from autonomous import log
-from dmtoolkit.apis import DnDBeyondAPI
-from slugify import slugify
-from autonomous.storage.cloudinarystorage import CloudinaryStorage
-import random
 import json
+import random
+
+from autonomous import log
 from autonomous.apis import OpenAI
+from autonomous.storage.cloudinarystorage import CloudinaryStorage
+from slugify import slugify
+
+from dmtoolkit.apis import DnDBeyondAPI
+from dmtoolkit.models.dndobject import DnDObject
 
 
 class Character(DnDObject):
@@ -13,6 +15,7 @@ class Character(DnDObject):
         # character traits
         "npc": True,
         "canon": False,
+        "dnd_beyond_id": None,
         "name": "",
         "gender": "",
         "image": {"url": "", "asset_id": 0, "raw": None},
@@ -42,6 +45,24 @@ class Character(DnDObject):
         "conversation_summary": {"summary": "", "message": "", "response": ""},
         "backstory_summary": "",
     }
+
+    def dndbeyond_updates(self):
+        if not self.dnd_beyond_id:
+            log("Player must have a dnd_id")
+            return None
+        else:
+            data = DnDBeyondAPI.getcharacter(self.dnd_beyond_id)
+
+            if results := self.table().find(dnd_id=self.dnd_beyond_id):
+                self.pk = results["pk"]
+
+            if data["image"]["url"] and data["image"]["url"] != self.image.get("url"):
+                self.image = CloudinaryStorage().save(
+                    data["image"]["url"], folder=f"dnd/players/{slugify(self.name)}"
+                )
+            del data["image"]
+            self.__dict__.update(data)
+        return data
 
     def get_image_prompt(self):
         style = ["Italian Renaissance", "John Singer Sargent", "James Tissot"]
@@ -78,7 +99,9 @@ Respond to the player's message below as the above described character
 
         primer = "As an expert AI in D&D Worldbuilding as well, read the following dialogue. The first paragraph contains the context of the conversation, followed by the Player's message and then the NPC's response. Summarize into a concise paragraph, creating a readable summary that could help a person understand the main points of the conversation. Avoid unnecessary details."
         updated_summary = f"Previous conversation:\n{self.conversation_summary['summary']}\n\nPlayer Message:\n{self.conversation_summary['message']}\n\nNPC Response:\n{self.conversation_summary['response']}"
-        self.conversation_summary["summary"] = OpenAI().summarize_text(updated_summary, primer=primer)
+        self.conversation_summary["summary"] = OpenAI().summarize_text(
+            updated_summary, primer=primer
+        )
         self.conversation_summary["message"] = message
         self.conversation_summary["response"] = response
         self.save()
@@ -151,7 +174,9 @@ Respond to the player's message below as the above described character
             "unfriendly",
         ]
 
-        gender = random.choices(["male", "female", "non-binary"], weights=[5, 5, 1], k=1)[0]
+        gender = random.choices(
+            ["male", "female", "non-binary"], weights=[5, 5, 1], k=1
+        )[0]
         primer = """
         You are a D&D 5e NPC generator that creates interesting random NPC's with complete stats and backstory
         """
@@ -248,27 +273,3 @@ Respond to the player's message below as the above described character
 
         npc = cls(**npc_data)
         return npc
-
-
-class Player(Character):
-    attributes = Character.attributes | {"dnd_id": None, "npc": False}
-
-    def updateinfo(self, **kwargs):
-        if not self.dnd_id:
-            log("Player must have a dnd_id")
-            return None
-        else:
-            data = DnDBeyondAPI.getcharacter(self.dnd_id)
-
-            if results := self.table().find(dnd_id=self.dnd_id):
-                self.pk = results["pk"]
-
-            if data["image"]["url"] and data["image"]["url"] != self.image.get("url"):
-                self.image = CloudinaryStorage().save(data["image"]["url"], folder=f"dnd/players/{slugify(self.name)}")
-
-            del data["image"]
-
-            self.__dict__.update(data)
-            # log(self)
-            self.save()
-        return data

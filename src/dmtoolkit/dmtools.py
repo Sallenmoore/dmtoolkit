@@ -4,7 +4,7 @@ from slugify import slugify
 import dice
 from autonomous.logger import log
 from autonomous.apis import OpenAI
-from dmtoolkit.models import Monster, Item, Spell, Character, Player, Shop
+from dmtoolkit.models import Monster, Item, Spell, Character, Shop
 
 
 class DMTools:
@@ -128,7 +128,9 @@ class DMTools:
                 },
             },
         }
-        funcobj["parameters"]["required"] = list(funcobj["parameters"]["properties"].keys())
+        funcobj["parameters"]["required"] = list(
+            funcobj["parameters"]["properties"].keys()
+        )
         # breakpoint()
         encounter = OpenAI().generate_text(prompt, primer, functions=funcobj)
         encounter = json.loads(encounter)
