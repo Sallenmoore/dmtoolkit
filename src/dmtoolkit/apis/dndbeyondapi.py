@@ -1,7 +1,8 @@
-from autonomous.model.automodel import AutoModel
-from autonomous import log
-import requests
 from enum import Enum
+
+import requests
+from autonomous import log
+from autonomous.model.automodel import AutoModel
 
 
 class DnDBeyondAPI:
@@ -45,7 +46,7 @@ class DnDBeyondAPI:
         character["gender"] = kwargs.get("gender") or "Non-Binary"
         character[
             "desc"
-        ] = f" With {kwargs.get('hair')} hair, {kwargs.get('skin')} skin, and {kwargs.get('eyes')} eyes, {character['name']} stands {kwargs.get('height')} and weighs {kwargs.get('weight')}"
+        ] = f" With {kwargs.get('hair', 'medium length')} hair, {kwargs.get('skin', 'weathered')} skin, and {kwargs.get('eyes'), 'hazel'} eyes, {character['name']} stands {kwargs.get('height', '6ft')} and weighs {kwargs.get('weight', 160)}"
 
         # breakpoint()
         character["image"] = {
@@ -102,7 +103,7 @@ class DnDBeyondAPI:
             ch_inventory.append(
                 {
                     "name": item["definition"]["name"],
-                    "description": item["definition"]["description"],
+                    "pk": "",
                 }
             )
         return ch_inventory
@@ -124,16 +125,14 @@ class DnDBeyondAPI:
             # log(v)
             if v:
                 for option in v:
-                    features[option["name"]] = option.get("snippet") or option.get(
-                        "description"
-                    )
+                    features[option["name"]] = ""
 
         for k, v in kwargs.get("options", {}).items():
             if v:
                 for o in v:
                     # log(o)
                     o = o["definition"]
-                    features[o["name"]] = o.get("snippet") or o.get("description")
+                    features[o["name"]] = ""
 
         return features
 
@@ -144,12 +143,12 @@ class DnDBeyondAPI:
             if v:
                 for o in v:
                     o = o["definition"]
-                    spells[o["name"]] = o.get("snippet") or o.get("description")
+                    spells[o["name"]] = None
 
         for v in kwargs.get("classSpells", []):
             for sp in v.get("spells", []):
                 o = sp["definition"]
-                spells[o["name"]] = o.get("snippet") or o.get("description")
+                spells[o["name"]] = None
 
         return spells
 

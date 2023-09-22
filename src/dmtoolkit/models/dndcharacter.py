@@ -19,9 +19,12 @@ class Character(DnDObject):
         "name": "",
         "gender": "",
         "image": {"url": "", "asset_id": 0, "raw": None},
+        "dob": "",
+        "dod": "",
         "ac": 0,
         "desc": "",
         "backstory": "",
+        "backstory_summary": "",
         "gender": "",
         "personality": "",
         "occupation": "",
@@ -43,7 +46,147 @@ class Character(DnDObject):
         "resistances": [],
         "chats": [],
         "conversation_summary": {"summary": "", "message": "", "response": ""},
-        "backstory_summary": "",
+    }
+    genders = ["male", "female", "non-binary"]
+    personal_traits = [
+        "shy",
+        "outgoing",
+        "friendly",
+        "mean",
+        "snooty",
+        "aggressive",
+        "sneaky",
+        "greedy",
+        "kind",
+        "generous",
+        "smart",
+        "dumb",
+        "loyal",
+        "dishonest",
+        "honest",
+        "lazy",
+        "hardworking",
+        "stubborn",
+        "flexible",
+        "proud",
+        "humble",
+        "confident",
+        "insecure",
+        "courageous",
+        "cowardly",
+        "optimistic",
+        "pessimistic",
+        "silly",
+        "serious",
+        "sensitive",
+        "insensitive",
+        "creative",
+        "imaginative",
+        "practical",
+        "logical",
+        "intuitive",
+        "intelligent",
+        "wise",
+        "foolish",
+        "curious",
+        "nosy",
+        "adventurous",
+        "cautious",
+        "careful",
+        "reckless",
+        "careless",
+        "patient",
+        "impatient",
+        "tolerant",
+        "intolerant",
+        "forgiving",
+        "unforgiving",
+        "honest",
+        "unfriendly",
+        "outgoing",
+        "shy",
+        "sneaky",
+        "honest",
+        "dishonest",
+        "disloyal",
+        "unfriendly",
+    ]
+
+    funcobj = {
+        "name": "generate_npc",
+        "description": "completes NPC data object",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The character's name",
+                },
+                "age": {
+                    "type": "integer",
+                    "description": "The character's age",
+                },
+                "gender": {
+                    "type": "string",
+                    "description": "The character's gender",
+                },
+                "race": {
+                    "type": "string",
+                    "description": "The character's race",
+                },
+                "personality": {
+                    "type": "array",
+                    "description": "The character's personality traits",
+                    "items": {"type": "string"},
+                },
+                "desc": {
+                    "type": "array",
+                    "description": "A physical description of the character",
+                    "items": {"type": "string"},
+                },
+                "backstory": {
+                    "type": "string",
+                    "description": "The character's backstory",
+                },
+                "class_name": {
+                    "type": "string",
+                    "description": "The character's DnD class",
+                },
+                "occupation": {
+                    "type": "string",
+                    "description": "The character's daily occupation",
+                },
+                "inventory": {
+                    "type": "array",
+                    "description": "The character's inventory of items",
+                    "items": {"type": "string"},
+                },
+                "str": {
+                    "type": "number",
+                    "description": "The amount of Strength the character has from 1-20",
+                },
+                "dex": {
+                    "type": "integer",
+                    "description": "The amount of Dexterity the character has from 1-20",
+                },
+                "con": {
+                    "type": "integer",
+                    "description": "The amount of Constitution the character has from 1-20",
+                },
+                "int": {
+                    "type": "integer",
+                    "description": "The amount of Intelligence the character has from 1-20",
+                },
+                "wis": {
+                    "type": "integer",
+                    "description": "The amount of Wisdom the character has from 1-20",
+                },
+                "cha": {
+                    "type": "integer",
+                    "description": "The amount of Charisma the character has from 1-20",
+                },
+            },
+        },
     }
 
     def dndbeyond_updates(self):
@@ -64,207 +207,122 @@ class Character(DnDObject):
             self.__dict__.update(data)
         return data
 
-    def get_image_prompt(self):
-        style = ["Italian Renaissance", "John Singer Sargent", "James Tissot"]
-        return f"A full color portrait in the style of {random.choice(style)} of a {self.race} character from Dungeons and Dragons aged {self.age} and described as {self.desc}"
+    def complete(self):
+        age = self.age or random.randint(15, 45)
+        traits = self.personality or random.sample(self.personal_traits, 3)
+        gender = self.gender or random.choices(self.genders, weights=[5, 5, 1], k=1)[0]
+        primer = "You are a D&D 5e NPC generator that completes NPC profiles with complete stats and backstory"
+        prompt = f"""
+        Complete the incomplete information for the following Dungeons and Dragons NPC. Ensure consistency with the data already present. If not already present, create a detailed backstory for the NPC with an unexpected twist or secret.
 
-    def chat(self, message):
+        "name": {self.name},
+        "age":{self.age},
+        "gender":{self.gender},
+        "race":{self.race},
+        "personality":{self.personality},
+        "desc":{self.desc},
+        "backstory":{self.backstory},
+        "class_name":{self.class_name},
+        "occupation":{self.occupation},
+        "inventory":{self.inventory},
+        "str":{self.str},
+        "dex":{self.dex},
+        "con":{self.con},
+        "int":{self.int},
+        "wis":{self.wis},
+        "cha":{self.cha}
+        """
+
+        log(prompt)
+
+        required = self.funcobj["parameters"]["properties"].keys()
+        self.funcobj["parameters"]["required"] = list(required)
+        response = OpenAI().generate_text(prompt, primer, functions=self.funcobj)
+        try:
+            npc_data = json.loads(response)
+        except Exception as e:
+            log(e, response)
+            return None
+        log(npc_data.get("backstory"))
+        self.__dict__.update(npc_data)
+        return npc_data
+
+    def summarize_backstory(self):
         if not self.backstory_summary:
             self.backstory_summary = OpenAI().summarize_text(
                 self.backstory,
                 primer="Summarize the following text into 10 sentences or less. The text is a backstory for a D&D character.",
             )
-        primer = "You are playing the role of a D&D NPC talking to a PC."
-        prompt = "As D&D NPC matching the following description:"
-        prompt += f"""
-PERSONALITY: {", ".join(self.personality)}
+        return self.backstory_summary
 
-DESCRIPTION: {self.desc}
+    def summarize_conversation(self):
+        primer = "As an expert AI in D&D Worldbuilding, read the following dialogue. The first paragraph contains "
 
-BACKSTORY: {self.backstory_summary}
-"""
         if self.conversation_summary["summary"]:
-            prompt += f"""
-CONTEXT: {self.conversation_summary['summary']}
-"""
-        prompt += """
-Respond to the player's message below as the above described character
-        """
-        if self.conversation_summary["summary"]:
-            prompt += "using the CONTEXT as a starting point"
-        prompt += f"""
-{message}
-        """
-        response = OpenAI().generate_text(prompt, primer)
+            primer += "the context of the conversation, followed by "
+            updated_summary = f"Context: {self.conversation_summary['summary']}\n\n"
 
-        primer = "As an expert AI in D&D Worldbuilding as well, read the following dialogue. The first paragraph contains the context of the conversation, followed by the Player's message and then the NPC's response. Summarize into a concise paragraph, creating a readable summary that could help a person understand the main points of the conversation. Avoid unnecessary details."
-        updated_summary = f"Previous conversation:\n{self.conversation_summary['summary']}\n\nPlayer Message:\n{self.conversation_summary['message']}\n\nNPC Response:\n{self.conversation_summary['response']}"
+        primer = "the Player's message and then the NPC's response. Summarize into a concise paragraph, creating a readable summary that could help a person understand the main points of the conversation. Avoid unnecessary details."
+
+        updated_summary += f"Player Message:\n{self.conversation_summary['message']}\n\nNPC Response:\n{self.conversation_summary['response']}"
+
         self.conversation_summary["summary"] = OpenAI().summarize_text(
             updated_summary, primer=primer
         )
+
+    def chat(self, message):
+        # summarize conversation
+
+        primer = "You are playing the role of a D&D NPC talking to a PC."
+        prompt = "As D&D NPC matching the following description:"
+        prompt += f"""
+            PERSONALITY: {", ".join(self.personal_traits)}
+
+            DESCRIPTION: {self.desc}
+
+            BACKSTORY: {self.summarize_backstory()}
+            
+        """
+
+        prompt += """
+            Respond to the player's message as the above described character.
+        """
+        if summary := self.summarize_conversation():
+            prompt += f"""Use the following converstaion CONTEXT as a starting point:
+            
+            CONTEXT: {summary}
+            """
+
+        prompt += f"""
+        
+        PLAYER MESSAGE: {message}
+        """
+
+        response = OpenAI().generate_text(prompt, primer)
+
         self.conversation_summary["message"] = message
         self.conversation_summary["response"] = response
+        self.conversation_summary["summary"] = self.summarize_conversation()
         self.save()
         return response
 
     @classmethod
     def generate(cls, name=None, summary=None, generate_image=False):
         age = random.randint(15, 45)
-        personality = [
-            "shy",
-            "outgoing",
-            "friendly",
-            "mean",
-            "snooty",
-            "aggressive",
-            "sneaky",
-            "greedy",
-            "kind",
-            "generous",
-            "smart",
-            "dumb",
-            "loyal",
-            "dishonest",
-            "honest",
-            "lazy",
-            "hardworking",
-            "stubborn",
-            "flexible",
-            "proud",
-            "humble",
-            "confident",
-            "insecure",
-            "courageous",
-            "cowardly",
-            "optimistic",
-            "pessimistic",
-            "silly",
-            "serious",
-            "sensitive",
-            "insensitive",
-            "creative",
-            "imaginative",
-            "practical",
-            "logical",
-            "intuitive",
-            "intelligent",
-            "wise",
-            "foolish",
-            "curious",
-            "nosy",
-            "adventurous",
-            "cautious",
-            "careful",
-            "reckless",
-            "careless",
-            "patient",
-            "impatient",
-            "tolerant",
-            "intolerant",
-            "forgiving",
-            "unforgiving",
-            "honest",
-            "unfriendly",
-            "outgoing",
-            "shy",
-            "sneaky",
-            "honest",
-            "dishonest",
-            "disloyal",
-            "unfriendly",
-        ]
 
-        gender = random.choices(
-            ["male", "female", "non-binary"], weights=[5, 5, 1], k=1
-        )[0]
+        gender = random.choices(cls.genders, weights=[5, 5, 1], k=1)[0]
         primer = """
         You are a D&D 5e NPC generator that creates interesting random NPC's with complete stats and backstory
         """
-        traits = ", ".join(random.sample(personality, 3))
+        traits = ", ".join(random.sample(cls.personal_traits, 3))
         if summary:
             prompt = f"Generate an Dungeons and Dragons style {gender} NPC aged {age} years who is {summary}. Write a detailed NPC backstory that contains an unexpected twist or secret. The NPC should also have the following personality traits: {traits}"
         else:
             prompt = f"Generate an Dungeons and Dragons style {gender} NPC aged {age} years with the following personality traits: {traits}. Include a backstory that contains an unexpected twist or secret"
         # log(prompt)
-        funcobj = {
-            "name": "generate_npc",
-            "description": "builds NPC data object",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "type": "string",
-                        "description": "The character's name",
-                    },
-                    "age": {
-                        "type": "integer",
-                        "description": "The character's age",
-                    },
-                    "gender": {
-                        "type": "string",
-                        "description": "The character's gender",
-                    },
-                    "race": {
-                        "type": "string",
-                        "description": "The character's race",
-                    },
-                    "personality": {
-                        "type": "array",
-                        "description": "The character's personality traits",
-                        "items": {"type": "string"},
-                    },
-                    "desc": {
-                        "type": "array",
-                        "description": "A physical description of the character",
-                        "items": {"type": "string"},
-                    },
-                    "backstory": {
-                        "type": "string",
-                        "description": "The character's backstory",
-                    },
-                    "class_name": {
-                        "type": "string",
-                        "description": "The character's DnD class",
-                    },
-                    "occupation": {
-                        "type": "string",
-                        "description": "The character's daily occupation",
-                    },
-                    "inventory": {
-                        "type": "array",
-                        "description": "The character's inventory of items",
-                        "items": {"type": "string"},
-                    },
-                    "str": {
-                        "type": "number",
-                        "description": "The amount of Strength the character has from 1-20",
-                    },
-                    "dex": {
-                        "type": "integer",
-                        "description": "The amount of Dexterity the character has from 1-20",
-                    },
-                    "con": {
-                        "type": "integer",
-                        "description": "The amount of Constitution the character has from 1-20",
-                    },
-                    "int": {
-                        "type": "integer",
-                        "description": "The amount of Intelligence the character has from 1-20",
-                    },
-                    "wis": {
-                        "type": "integer",
-                        "description": "The amount of Wisdom the character has from 1-20",
-                    },
-                    "cha": {
-                        "type": "integer",
-                        "description": "The amount of Charisma the character has from 1-20",
-                    },
-                },
-            },
-        }
-        required = funcobj["parameters"]["properties"].keys()
-        funcobj["parameters"]["required"] = list(required)
-        response = OpenAI().generate_text(prompt, primer, functions=funcobj)
+        required = cls.funcobj["parameters"]["properties"].keys()
+        cls.funcobj["parameters"]["required"] = list(required)
+        response = OpenAI().generate_text(prompt, primer, functions=cls.funcobj)
         try:
             npc_data = json.loads(response)
         except Exception as e:
@@ -273,3 +331,7 @@ Respond to the player's message below as the above described character
 
         npc = cls(**npc_data)
         return npc
+
+    def get_image_prompt(self):
+        style = ["Italian Renaissance", "John Singer Sargent", "James Tissot"]
+        return f"A full color portrait in the style of {random.choice(style)} of a {self.gender} {self.race} from Dungeons and Dragons aged {self.age} and described as {self.desc}"

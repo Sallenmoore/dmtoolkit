@@ -24,10 +24,10 @@ clean:
 
 ###### TESTING #######
 
-RUNTEST='test_'
+RUNTEST='test_dndnpc_complete'
 test: clean updatepkgs
 	pip install -e .
-	python -m pytest -s -v -k $(RUNTEST)
+	python -m pytest -k $(RUNTEST)
 
 RUNTEST?='test_'
 tests: clean updatepkgs

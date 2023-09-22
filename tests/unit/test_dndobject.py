@@ -141,7 +141,26 @@ class TestDnDNPC:
         assert response
         assert npc.conversation_summary
         assert npc.backstory_summary
-        print(response, npc.conversation_summary, npc.backstory_summary, sep="\n")
+        # print(response, npc.conversation_summary, npc.backstory_summary, sep="\n")
+
+    def test_dndnpc_complete(self):
+        npc = Character(
+            name="John",
+            age="20",
+            desc="The most average looking person ever.",
+            str=10,
+            dex=10,
+            con=10,
+            int=10,
+            wis=10,
+            cha=10,
+        )
+        npc.str = None
+        result = npc.complete()
+        assert result
+        assert npc.backstory
+        assert npc.str
+        # print(npc)
 
 
 # @pytest.mark.skip(reason="costs money")
