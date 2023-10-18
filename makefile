@@ -16,6 +16,7 @@ package: clean
 
 updatepkgs:
 	pip install --upgrade pip wheel && pip install --upgrade -r requirements.txt && pip install --upgrade -r requirements_dev.txt
+	
 
 ###### CLEANING #######
 
@@ -24,13 +25,17 @@ clean:
 
 ###### TESTING #######
 
+preptest: clean updatepkgs
+	pip install -e .
+
 RUNTEST='test_dndnpc_complete'
-test: clean updatepkgs
+test:
 	pip install -e .
 	python -m pytest -k $(RUNTEST)
 
-RUNTEST?='test_'
-tests: clean updatepkgs
-	pip install -e .
-	python -m pytest -s -v
+testall:
+	python -m pytest
+
+tests:
+	python -m pytest
 
