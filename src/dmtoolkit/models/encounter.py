@@ -77,14 +77,8 @@ class Encounter(TTRPGObject):
             k=(difficulty[0] * cls.LOOT_MULTIPLIER) + 1,
         )
         prompt = f"Generate an {world.genre} encounter for a party of {num_players} at level {level} that is {difficulty[1]} and rewards the following type of loot items: {loot_type}"
-        cls.funcobj["parameters"]["required"] = list(
-            cls.funcobj["parameters"]["properties"].keys()
-        )
-        # breakpoint()
-        encounter = OpenAI().generate_text(prompt, primer, functions=cls.funcobj)
-        encounter = json.loads(encounter, strict=False)
-        encounter["difficulty"] = difficulty[1]
-        encounter["world"] = world
+        encounter = super().generate(primer, prompt)
+        encounter |= {"difficulty": difficulty[1], "world": world}
         encounter = Encounter(**encounter)
         encounter.save()
         return encounter

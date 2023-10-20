@@ -4,7 +4,7 @@ from autonomous import log
 import random
 
 
-class Monster(DnDObject):
+class Creature(DnDObject):
     search_api = monster_api
     attributes = {
         "name": "",

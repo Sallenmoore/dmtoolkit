@@ -25,7 +25,7 @@ clean:
 
 ###### TESTING #######
 
-preptest: clean updatepkgs
+inittest: clean updatepkgs
 	pip install -e .
 
 RUNTEST='test_dndnpc_complete'

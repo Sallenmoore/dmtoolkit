@@ -1,5 +1,8 @@
+import json
+
 from autonomous import log
 from autonomous.ai import OpenAI
+from autonomous.apis import WikiJS
 from autonomous.model.automodel import AutoModel
 from autonomous.storage.cloudinarystorage import CloudinaryStorage
 from slugify import slugify
@@ -7,6 +10,7 @@ from slugify import slugify
 
 class TTRPGObject(AutoModel):
     _storage = CloudinaryStorage()
+    _wiki_api = WikiJS()
     attributes = {
         "name": "",
         "_image": {"url": "", "asset_id": 0, "raw": None},
@@ -17,6 +21,7 @@ class TTRPGObject(AutoModel):
         "dob": "",
         "traits": [],
         "world": None,
+        "wiki_ids": {},
     }
 
     def __getattr__(self, key):
@@ -81,3 +86,40 @@ class TTRPGObject(AutoModel):
 
     def get_image_prompt(self):
         raise NotImplementedError
+
+    @classmethod
+    def generate(cls, prompt, primer):
+        if hasattr(cls, "funcobj"):
+            cls.funcobj["parameters"]["required"] = list(
+                cls.funcobj["parameters"]["properties"].keys()
+            )
+            response = OpenAI().generate_text(prompt, primer, functions=cls.funcobj)
+        else:
+            response = OpenAI().generate_text(prompt, primer)
+
+        response = response.replace("'", "").replace("\\", "")
+        try:
+            obj_data = json.loads(response, strict=False)
+        except Exception as e:
+            log(response)
+            raise Exception(e)
+        return obj_data
+
+    def canonize(self, api=None, path="ttrpg"):
+        wrld = self.world.name if self.world else self.name
+        config = {
+            "Name": self.name,
+            "Details": {"meta": [f"Genre: {self.genre}", f"World: {wrld}"]}
+            | self.serialize(),
+        }
+        model = self.model_name.lower()
+        world = self.world.name.lower() if self.world else self.name.lower()
+        if not api:
+            api = self._wiki_api
+        return api.push(
+            title=self.name,
+            content=config,
+            path=f"{path}/{model}/{self.slug}",
+            description=self.desc[: self.desc.find(".") + 1],
+            tags=[model, world, "ttrpg"],
+        )

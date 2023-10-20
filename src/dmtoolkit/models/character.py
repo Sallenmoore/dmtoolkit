@@ -230,16 +230,9 @@ class Character(TTRPGObject):
             prompt += (
                 f" by incorporating the following into the backstory: {description}."
             )
-        required = cls.funcobj["parameters"]["properties"].keys()
-        cls.funcobj["parameters"]["required"] = list(required)
 
-        response = OpenAI().generate_text(prompt, primer, functions=cls.funcobj)
+        obj_data = super().generate(primer, prompt)
 
-        try:
-            obj_data = json.loads(response, strict=False)
-        except Exception as e:
-            log(e)
-            raise Exception(response)
         obj_data |= {"world": world, "traits": traits}
         obj = cls(**obj_data)
         obj.save()

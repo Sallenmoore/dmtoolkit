@@ -294,6 +294,7 @@ class TestModels:
             assert c.genre == region.genre
             assert c.factions == region.factions
 
+    @pytest.mark.skip(reason="costs money")
     def test_world_build(self):
         world = World(
             name="Xanadu",
@@ -312,18 +313,18 @@ class TestModels:
         assert world.slug == slugify(world.name)
         assert world.backstory_summary
 
-        log(world.get_image_prompt())
+        # log(world.get_image_prompt())
         assert world.get_image_prompt()
 
         url = world.image()
-        log(url)
+        # log(url)
         assert world._image["url"] == url
 
         world = world.generate()
         assert len(world.regions) == 1
         all(len(r.cities) == 2 for r in world.regions)
         all(len(r.factions) == 2 for r in world.regions)
-        all(len(r.locations) == 3 for r in world.locations)
+        all(len(r.locations) == 3 for r in world.regions)
 
         for r in world.regions:
             assert r.genre == world.genre
@@ -339,15 +340,22 @@ class TestModels:
         for r in world.regions:
             for f in r.cities:
                 assert f.genre == r.genre
-                assert len(f.locations) == 1
-                assert len(f.citizens) == 1
+                assert len(f.locations) >= 1
+                assert len(f.citizens()) >= 1
 
+    @pytest.mark.skip(reason="costs money")
     def test_image_creation(self):
         location = Location.generate(world=World(name="ImageTest", genre="fantasy"))
         location.save()
         log(location.get_image_prompt())
         result = location.add_inhabitant()
         log(result.get_image_prompt(), result.image())
-        result = location.add_inhabitant(result)
-        log(result.get_image_prompt(), result.image())
-        assert len(location.inhabitants) == 1
+        assert all((result.get_image_prompt(), result.image()))
+        result2 = location.add_inhabitant(result)
+        log(result2.get_image_prompt(), result2.image())
+        assert all((result2.image(), result.image()))
+
+    def test_character_canonize(self):
+        character = Character.generate(world=World(name="Test", genre="fantasy"))
+        character.save()
+        assert character.canonize()

@@ -83,17 +83,7 @@ class Location(TTRPGObject):
         """
         prompt = f"Generate {description}. Create data for the following attributes:\n\nName: \nLocation Type: \nDescription: \nBackstory: \nInventory:\n\n The location needs a backstory containing an unusual, wonderful, OR sinister secret for players to explore."
 
-        cls.funcobj["parameters"]["required"] = list(
-            cls.funcobj["parameters"]["properties"].keys()
-        )
-
-        response = OpenAI().generate_text(prompt, primer, functions=cls.funcobj)
-
-        try:
-            obj_data = json.loads(response, strict=False)
-        except Exception as e:
-            log(e)
-            raise Exception(response)
+        obj_data = super().generate(primer, prompt)
         obj_data["world"] = world
         obj = cls(**obj_data)
         obj.save()

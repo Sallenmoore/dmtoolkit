@@ -52,16 +52,7 @@ class Item(TTRPGObject):
         prompt = f"Generate a random fictional {world.genre} loot item for a TTRPG with general stats. There is a 40% chance the item has an additional special feature or ability."
         if description:
             prompt += f" The item has the following description: {description}."
-        required = cls.funcobj["parameters"]["properties"].keys()
-        cls.funcobj["parameters"]["required"] = list(required)
-
-        response = OpenAI().generate_text(prompt, primer, functions=cls.funcobj)
-
-        try:
-            obj_data = json.loads(response, strict=False)
-        except Exception as e:
-            log(e)
-            raise Exception(response)
+        obj_data = super().generate(primer, prompt)
         obj_data["world"] = world
         obj = cls(**obj_data)
         obj.save()

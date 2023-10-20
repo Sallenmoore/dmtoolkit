@@ -93,10 +93,6 @@ class City(TTRPGObject):
     def districts(self):
         return list(self.locations.keys())
 
-    @property
-    def citizens(self):
-        return [c for location in self.locations.values() for c in location.inhabitants]
-
     @classmethod
     def generate(cls, world, description=None):
         primer = f"""
@@ -108,16 +104,7 @@ class City(TTRPGObject):
         )
         prompt = f"Generate a fictional {world.genre} city within a region described as {description}. The city should have the following characteristics: {traits}. Write a detailed city description containing an unusual, wonderful, OR sinister secret hidden within the city."
 
-        required = cls.funcobj["parameters"]["properties"].keys()
-        cls.funcobj["parameters"]["required"] = list(required)
-
-        response = OpenAI().generate_text(prompt, primer, functions=cls.funcobj)
-
-        try:
-            obj_data = json.loads(response, strict=False)
-        except Exception as e:
-            log(e)
-            raise Exception(response)
+        obj_data = super().generate(primer, prompt)
 
         if districts := obj_data.pop("districts", None):
             obj_data["locations"] = dict(zip(districts, [[] for _ in districts]))
@@ -127,11 +114,18 @@ class City(TTRPGObject):
         city.save()
         return city
 
+    def citizens(self):
+        lctns = [l for locations in self.locations.values() for l in locations]
+        cit = []
+        for l in lctns:
+            cit += l.inhabitants
+        return cit
+
     def get_image_prompt(self):
         return f"""Create a full color, high resolution overhead illustrated map view of a {self.traits} called {self.name} of size {self.population} with the following districts: {', '.join(self.districts)}. The map should be detailed enough to use as a battlemap for a 5 person encounter. 
         """
 
-    def add_locations(self, n=1):
+    def add_locations(self, n=1, owner=False):
         for _ in range(n):
             ltype = random.choice(
                 [
@@ -152,7 +146,7 @@ class City(TTRPGObject):
             district = random.choice(self.districts)
             prompt = f"{random.choice(ltype)} in the {district} district in a {', '.join(self.traits)} of size {self.population} people."
             location = Location.generate(self.world, description=prompt)
-            location.add_inhabitant(owner=True)
+            location.add_inhabitant(owner=owner)
             self.locations[district].append(location)
 
         self.save()

@@ -14,7 +14,6 @@ class World(TTRPGObject):
         "system": None,
         "genre": "",
         "user": None,
-        "doc_apis": [],
     }
 
     @property
@@ -32,30 +31,19 @@ class World(TTRPGObject):
     def generate(self, region=1, location=1, city=1, faction=1):
         for _ in range(region):
             self.add_region(location, city, faction)
+        return self
 
     def add_region(self, l_num=3, c_num=2, f_num=2):
         region = Region.generate(world=self, description=self.desc)
         self.regions.append(region)
         factions = region.create_factions(f_num)
-        (f.add_member(leader=True) for f in factions)
+        for f in factions:
+            f.add_member(leader=True)
         locations = region.create_locations(l_num)
-        (f.add_inhabitant(owner=True) for f in locations)
+        for f in locations:
+            f.add_inhabitant(owner=True)
         cities = region.create_cities(c_num)
-        (f.add_locations(owner=True) for f in cities)
-        region.cities = self.add_cities(cities)
+        for f in cities:
+            f.add_locations(owner=True)
         self.save()
         return region
-
-    def config(self):
-        self.config = {
-            "name": self.name,
-            "genre": self.genre,
-            "system": self.system.name,
-            "backstory": self.backstory,
-            "regions": [r.name for r in self.regions.serialize()],
-        }
-        return self.config
-
-    def canonize(self):
-        for doc in self.doc_apis:
-            doc.canonize(self.config())

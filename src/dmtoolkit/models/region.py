@@ -55,16 +55,7 @@ class Region(TTRPGObject):
         As an expert AI in fictional Worldbuilding, generate a fictional region complete with a name and description.
         """
         prompt = f"Generate a fictional {world.genre} region with a {trait} setting within a world with the following description: {description or world.desc}. Write a detailed description containing an unusual, wonderful, OR sinister secret from the region's history."
-        required = cls.funcobj["parameters"]["properties"].keys()
-        cls.funcobj["parameters"]["required"] = list(required)
-
-        response = OpenAI().generate_text(prompt, primer, functions=cls.funcobj)
-
-        try:
-            obj_data = json.loads(response, strict=False)
-        except Exception as e:
-            log(e)
-            raise Exception(response)
+        obj_data = super().generate(primer, prompt)
         obj_data |= {"world": world, "traits": trait}
         obj = cls(**obj_data)
         obj.save()
@@ -87,7 +78,16 @@ class Region(TTRPGObject):
         return self.cities
 
     def create_locations(self, n=1):
-        ltypes = ["cave", "ruin", "temple", "fortress", "tower", "swamp", "forest"]
+        ltypes = [
+            "cave",
+            "ruin",
+            "temple",
+            "fortress",
+            "tower",
+            "swamp",
+            "forest",
+            "mountain",
+        ]
         description = f"An explorable {random.choice(ltypes)} with secrets and story threads in a region described as follows: {self.desc}."
         for _ in range(n):
             l = Location.generate(world=self.world, description=description)

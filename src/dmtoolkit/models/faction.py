@@ -79,16 +79,7 @@ class Faction(TTRPGObject):
         """
         traits = ", ".join([random.choice(cls.personality) for _ in range(2)])
         prompt = f"Generate a {world.genre} faction for a TTRPG in a location described as follows: {traits}\n{description}.  The faction needs a backstory containing an unusual, wonderful, OR sinister secret that gives the Faction a goal they are working toward."
-        required = cls.funcobj["parameters"]["properties"].keys()
-        cls.funcobj["parameters"]["required"] = list(required)
-
-        response = OpenAI().generate_text(prompt, primer, functions=cls.funcobj)
-
-        try:
-            obj_data = json.loads(response, strict=False)
-        except Exception as e:
-            log(e)
-            raise Exception(response)
+        obj_data = super().generate(primer, prompt)
         obj_data |= {"world": world, "traits": traits}
         obj = cls(**obj_data)
         obj.save()
@@ -98,7 +89,7 @@ class Faction(TTRPGObject):
         return f"A full color logo or banner for a fictional faction named {self.name} and described as {self.desc}."
 
     def add_member(self, character=None, leader=False):
-        descriptipon = ""
+        description = ""
         if leader:
             description = (
                 f"The leader of the {self.name} faction whose goal is: {self.goal}."

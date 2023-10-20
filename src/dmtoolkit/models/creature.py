@@ -1,8 +1,9 @@
+import json
 import random
 
 from autonomous import log
 from autonomous.ai import OpenAI
-import json
+
 from dmtoolkit.models.ttrpgobject import TTRPGObject
 
 
@@ -122,17 +123,10 @@ class Creature(TTRPGObject):
         As an expert AI in fictional {world.genre} worldbuilding, you generate creatures appropriate to the genre with a name and description.
         """
         prompt = f"As an expert AI in creating enemies for a {world.genre} TTRPG, generate an creature with the following description:{description}. Write a detailed backstory for the creature containing an unusual, wonderful, OR sinister secret that gives the creature a goal to work toward."
-        required = cls.funcobj["parameters"]["properties"].keys()
-        cls.funcobj["parameters"]["required"] = list(required)
 
-        response = OpenAI().generate_text(prompt, primer, functions=cls.funcobj)
+        obj_data = super().generate(primer, prompt)
 
-        try:
-            obj_data = json.loads(response, strict=False)
-        except Exception as e:
-            log(e)
-            raise Exception(response)
-        obj_data['world'] = world
+        obj_data["world"] = world
         obj = cls(**obj_data)
         obj.save()
         return obj
