@@ -28,9 +28,11 @@ class World(TTRPGObject):
         description = f"A full color, high resolution illustrated map a fictional {self.genre} world called {self.name} and described as {self.desc or 'filled with points of interest to explore, antagonistic factions, and a rich, mysterious history.'}"
         return description
 
-    def generate(self, region=1, location=1, city=1, faction=1):
+    def generate(self, user, region=1, location=1, city=1, faction=1):
         for _ in range(region):
             self.add_region(location, city, faction)
+        self.user = user.id
+        self.save()
         return self
 
     def add_region(self, l_num=3, c_num=2, f_num=2):

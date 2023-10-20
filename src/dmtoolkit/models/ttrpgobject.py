@@ -1,8 +1,9 @@
 import json
+import re
 
 from autonomous import log
 from autonomous.ai import OpenAI
-from autonomous.apis import WikiJS
+from autonomous.storage.markdown import Page
 from autonomous.model.automodel import AutoModel
 from autonomous.storage.cloudinarystorage import CloudinaryStorage
 from slugify import slugify
@@ -10,7 +11,7 @@ from slugify import slugify
 
 class TTRPGObject(AutoModel):
     _storage = CloudinaryStorage()
-    _wiki_api = WikiJS()
+    _wiki_api = Page
     attributes = {
         "name": "",
         "_image": {"url": "", "asset_id": 0, "raw": None},
@@ -97,29 +98,58 @@ class TTRPGObject(AutoModel):
         else:
             response = OpenAI().generate_text(prompt, primer)
 
-        response = response.replace("'", "").replace("\\", "")
-        try:
-            obj_data = json.loads(response, strict=False)
-        except Exception as e:
-            log(response)
-            raise Exception(e)
+        json_invalid_count = 10
+        json_valid = False
+        while not json_valid:
+            try:
+                obj_data = json.loads(response, strict=False)
+                json_valid = True
+            except json.JSONDecodeError as e:
+                response = response[: e.pos] + response[e.pos + 1 :]
+                log(e, response)
+                if json_invalid_count == 0:
+                    if hasattr(cls, "funcobj"):
+                        cls.funcobj["parameters"]["required"] = list(
+                            cls.funcobj["parameters"]["properties"].keys()
+                        )
+                        response = OpenAI().generate_text(
+                            prompt, primer, functions=cls.funcobj
+                        )
+                    else:
+                        response = OpenAI().generate_text(prompt, primer)
+                    json_invalid_count = 10
+                else:
+                    json_invalid_count -= 1
         return obj_data
 
     def canonize(self, api=None, path="ttrpg"):
         wrld = self.world.name if self.world else self.name
         config = {
-            "Name": self.name,
-            "Details": {"meta": [f"Genre: {self.genre}", f"World: {wrld}"]}
-            | self.serialize(),
+            self.name: {
+                "Meta": [f"Genre: {self.genre}", f"World: {wrld}"],
+                "Details": self,
+            }
         }
-        model = self.model_name.lower()
+        model = self.__class__.__name__.lower()
         world = self.world.name.lower() if self.world else self.name.lower()
         if not api:
             api = self._wiki_api
-        return api.push(
-            title=self.name,
-            content=config,
-            path=f"{path}/{model}/{self.slug}",
-            description=self.desc[: self.desc.find(".") + 1],
-            tags=[model, world, "ttrpg"],
-        )
+
+        key = api.__class__.__name__.lower()
+        if key not in self.wiki_ids:
+            res = api.push(
+                config,
+                title=self.name,
+                path=f"{path}/{model}/{self.slug}",
+                description=self.desc[: self.desc.find(".") + 1],
+                tags=[model, world, "ttrpg"],
+            )
+            self.wiki_ids[key] = res.id
+            self.save()
+        else:
+            res = api.push(
+                config,
+                title=self.name,
+                id=self.wiki_ids[key],
+            )
+        return res

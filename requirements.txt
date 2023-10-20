@@ -3,7 +3,7 @@
 ##################################
 
 ##### Frameworks #####
-autonomous-app >= 0.1.37
+autonomous-app >= 0.1.40
 
 ##### System #####
 twine

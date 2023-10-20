@@ -25,17 +25,18 @@ clean:
 
 ###### TESTING #######
 
-inittest: clean updatepkgs
+testinit: clean updatepkgs
 	pip install -e .
 
-RUNTEST='test_dndnpc_complete'
+RUNTEST='test_'
 test:
 	pip install -e .
 	python -m pytest -k $(RUNTEST)
 
-testall:
-	python -m pytest
-
 tests:
 	python -m pytest
+
+testfull:testinit tests
+
+
 

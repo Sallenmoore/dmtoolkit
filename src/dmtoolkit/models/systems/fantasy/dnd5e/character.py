@@ -97,6 +97,22 @@ class DnDCharacter(Character):
         },
     }
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.passive_perception = (
+            math.floor(((int(self.wis) - 10) / 2)) + 10 if self.wis else 0
+        )
+        self.hp = (
+            self.con * (random.randint(int(self.level / 2), self.level) + 1)
+            if not self.hp and self.con
+            else 0
+        )
+        self.ac = (
+            self.dex + random.randint(self.level, self.level * 2)
+            if not self.ac and self.dex
+            else 0
+        )
+
     def dndbeyond_updates(self):
         if not self.dnd_beyond_id:
             log("Player must have a dnd_id")
