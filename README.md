@@ -2,16 +2,28 @@
 
 !!!!!!!!!!!!!!!!!!!! NOT YET STABLE !!!!!!!!!!!!!!!!!!!!!!!!
 
-![Tests](https://github.com/Sallenmoore/autonomous/actions/workflows/tests.yml/badge.svg)
-
 - **[pypi](https://pypi.org/project/dmtoolkit/)**
 - **[github](https://github.com/Sallenmoore/dmtoolkit)**
+
+## Overview
+
+Completely rewritten from the ground up as a TTRPG worldbuilding tool using AI to generate entire worlds.
+
+Much more to come...
 
 ## Setup
 
 Add the following to your .env file:
 
 ```bash
+### DB Config
+REDIS_PORT=
+REDIS_HOST=
+RQ_DEFAULT_CONNECTION=
+REDIS_DB=
+REDIS_DECODE=
+REDIS_USERNAME=
+REDIS_PASSWORD=
 #### OpenAI Config
 OPENAI_KEY=
 
@@ -36,37 +48,13 @@ LOG_LEVEL=INFO
 
 - TBD
 
-## Dependencies
-
-- **Languages**
-  - [Python 3.10](/Dev/language/python)
-- **Frameworks**
-  - [Autonomous](https://github.com/Sallenmoore/autonomous)
-  - [gql](https://github.com/graphql-python/gql)
-- **Containers**
-  - [Docker](https://docs.docker.com/)
-  - [Docker Compose](https://github.com/compose-spec/compose-spec/blob/master/spec.md)
-- **Networking and APIs**
-  - [requests](https://requests.readthedocs.io/en/latest/)
-  - [OpenAI](https://beta.openai.com/docs/api-reference/introduction)
-  - [Cloudinary](https://cloudinary.com/documentation/image_upload_api_reference)
-  - [WikiJS](https://docs.requarks.io/en/api)
-- **Databases**
-  - [TinyDB](https://tinydb.readthedocs.io/en/latest/)
-- **Testing**
-  - [pytest](/Dev/tools/pytest)
-  - [coverage](https://coverage.readthedocs.io/en/6.4.1/cmd.html)
-- **Documentation** - Coming Soon
-  - [pdoc](https://pdoc.dev/docs/pdoc/doc.html)
-  - [highlight.js](https://highlightjs.org/)
-
 ---
 
 ## Developer Notes
 
 ### TODO
 
-- Auto generate API documentation
+- A TODO list
 
 ### Issue Tracking
 

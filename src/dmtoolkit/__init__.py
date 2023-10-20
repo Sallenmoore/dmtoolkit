@@ -1,3 +1,1 @@
-__version__ = "0.0.24"
-
-from .dmtools import DMTools
+__version__ = "0.0.25"
