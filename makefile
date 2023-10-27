@@ -25,6 +25,10 @@ clean:
 
 ###### TESTING #######
 
+runcli: updatepkgs
+	python src/dmtoolkit/dmtools.py
+
+
 testinit: clean updatepkgs
 	pip install -e .
 

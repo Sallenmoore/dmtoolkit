@@ -222,10 +222,8 @@ class Character(TTRPGObject):
         primer = primer = f"""
         As an expert AI in fictional {world.genre} worldbuilding, you generate characters appropriate to the genre with a name and full details.
         """
-        traits = ", ".join(
-            [random.choice(traits) for traits in cls.personality.values()]
-        )
-        prompt = f"As an expert AI in creating NPCs for a {world.genre} TTRPG. Generate a {gender} NPC aged {age} years with the following personality traits: {traits}. Write a detailed backstory for the NPC containing an unusual, wonderful, OR sinister secret that gives the character a goal to work toward"
+        traits = [random.choice(traits) for traits in cls.personality.values()]
+        prompt = f"As an expert AI in creating NPCs for a {world.genre} TTRPG. Generate a {gender} NPC aged {age} years with the following personality traits: {', '.join(traits)}. Write a detailed backstory containing an unusual, wonderful, OR sinister secret that gives the character a goal to work toward"
         if description:
             prompt += (
                 f" by incorporating the following into the backstory: {description}."
@@ -241,3 +239,35 @@ class Character(TTRPGObject):
     def get_image_prompt(self):
         style = ["Italian Renaissance", "John Singer Sargent", "James Tissot"]
         return f"A full color portrait in the style of {random.choice(style)} of a fictional {self.gender} {self.race} {self.genre} character aged {self.age} and described as {self.desc}."
+
+    def page_data(self, root_path="ttrpg"):
+        data = {
+            "Goal": [
+                self.goal,
+                {
+                    "chats": [
+                        f"summary: {self.chats['summary']}",
+                        f"last message: {self.chats['summary']}",
+                        f"last response: {self.chats['response']}",
+                    ],
+                },
+            ],
+            "Details": [
+                f"gender: {self.gender}",
+                f"occupation: {self.occupation}",
+                f"race: {self.race}",
+                f"DOB: {self.dob if self.dob else 'Unknown'}",
+                f"DOD: {self.dob if self.dod else 'Unknown'}",
+                f"hit points: {self.hp}",
+            ],
+            "Attributes": [
+                f"str: {self.str}",
+                f"dex: {self.dex}",
+                f"con: {self.con}",
+                f"wis: {self.wis}",
+                f"int: {self.int}",
+                f"cha: {self.cha}",
+            ],
+            "Inventory": self.wealth + self.inventory,
+        }
+        return data

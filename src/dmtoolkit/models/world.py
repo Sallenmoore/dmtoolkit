@@ -16,6 +16,14 @@ class World(TTRPGObject):
         "user": None,
     }
 
+    def __init__(self, *args, **kwargs):
+        if not self.name:
+            self.name = f"{self.genre.capitalize()} World."
+        if not self.desc:
+            self.desc = f"An expansive, complex, and mysterious {self.genre.capitalize()} setting suitable for a TTRPG campaign."
+        if not self.backstory:
+            self.desc = f"{self.name} World has several factions vying for power through poltical machinations, subterfuge, and open warfare. The world is filled with points of interest to explore, antagonistic characters, and a rich, mysterious history"
+
     @property
     def history(self):
         return self.backstory
@@ -24,15 +32,27 @@ class World(TTRPGObject):
     def history(self, value):
         self.backstory = value
 
+    def save(self):
+        if not (self.user and self.genre):
+            raise Exception(
+                "World not saved because it has no user or genre. Must be associated with a 'user' and have a 'genre'."
+            )
+        else:
+            return super().save()
+
     def get_image_prompt(self):
         description = f"A full color, high resolution illustrated map a fictional {self.genre} world called {self.name} and described as {self.desc or 'filled with points of interest to explore, antagonistic factions, and a rich, mysterious history.'}"
         return description
 
-    def generate(self, user, region=1, location=1, city=1, faction=1):
+    def generate(self, region=1, location=1, city=1, faction=1):
         for _ in range(region):
             self.add_region(location, city, faction)
-        self.user = user.id
-        self.save()
+        if self.user:
+            self.save()
+        else:
+            raise Exception(
+                "World not saved because it has no user. Must be associated with a user."
+            )
         return self
 
     def add_region(self, l_num=3, c_num=2, f_num=2):
@@ -46,6 +66,18 @@ class World(TTRPGObject):
             f.add_inhabitant(owner=True)
         cities = region.create_cities(c_num)
         for f in cities:
-            f.add_locations(owner=True)
+            f.create_locations(owner=True)
         self.save()
         return region
+
+    def page_data(self, root_path="ttrpg"):
+        regions = [f"[{r.name}]({r.wiki_path})" for r in self.regions]
+        return {"Regions": regions}
+
+    def canonize(self, api=None, root_path="ttrpg"):
+        if not api:
+            api = self._wiki_api
+        super().canonize(api, root_path)
+        for r in self.regions:
+            r.canonize(api=api, root_path=root_path)
+        self.save()

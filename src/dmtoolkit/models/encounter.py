@@ -1,8 +1,6 @@
-import json
 import random
 
 from autonomous import log
-from autonomous.ai import OpenAI
 
 from dmtoolkit.models.ttrpgobject import TTRPGObject
 
@@ -21,7 +19,7 @@ class Encounter(TTRPGObject):
         "hard",
         "deadly",
     ]
-    loot = [
+    loot_types = [
         "currency",
         "valuables",
         "trinkets",
@@ -72,13 +70,27 @@ class Encounter(TTRPGObject):
         """
         difficulty = random.choice(list(enumerate(cls.difficulty_list)))
         loot_type = random.choices(
-            cls.loot,
+            cls.loot_types,
             weights=[10, 5, 3, 30, 10, 10],
             k=(difficulty[0] * cls.LOOT_MULTIPLIER) + 1,
         )
-        prompt = f"Generate an {world.genre} encounter for a party of {num_players} at level {level} that is {difficulty[1]} and rewards the following type of loot items: {loot_type}"
+        prompt = f"""Generate an {world.genre} TTRPG encounter for the following:
+        - Occurs in a world with the following description:{world.desc}
+        - a party of {num_players} at level {level} 
+        - Difficulty: {difficulty[1]} 
+        - Type of loot items: {loot_type} 
+        """
         encounter = super().generate(primer, prompt)
         encounter |= {"difficulty": difficulty[1], "world": world}
         encounter = Encounter(**encounter)
         encounter.save()
         return encounter
+
+    def page_data(self, root_path="ttrpg"):
+        return {
+            "Details": [
+                f"difficulty: {self.difficulty}",
+                {"enemies": [f"[{r.name}]({r.wiki_path})" for r in self.enemies]},
+                {"loot": self.loot},
+            ],
+        }

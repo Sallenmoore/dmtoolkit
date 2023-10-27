@@ -17,25 +17,42 @@ class Faction(TTRPGObject):
         "leader": None,
         "members": [],
     }
-    personality = [
-        "greedy",
-        "generous",
-        "lazy",
-        "hardworking",
-        "courageous",
-        "cowardly",
-        "creative",
-        "imaginative",
-        "practical",
-        "rational",
-        "curious",
-        "nosy",
-        "violent",
-        "cautious",
-        "careful",
-        "reckless",
-        "careless",
-    ]
+    personality = {
+        "social": [
+            "secretive",
+            "agressive",
+            "courageous",
+            "cowardly",
+            "quirky",
+            "imaginative",
+            "reckless",
+            "cautious",
+            "suspicious",
+            "friendly",
+            "unfriendly",
+        ],
+        "political": [
+            "practical",
+            "violent",
+            "cautious",
+            "sinister",
+            "anarchic",
+            "religous",
+            "patriotic",
+            "nationalistic",
+            "xenophobic",
+            "racist",
+            "egalitarian",
+        ],
+        "economic": [
+            "disruptive",
+            "ambitious",
+            "corrupt",
+            "charitable",
+            "greedy",
+            "generous",
+        ],
+    }
 
     funcobj = {
         "name": "generate_faction",
@@ -77,8 +94,8 @@ class Faction(TTRPGObject):
         primer = f"""
         You are an expert {world.genre} TTRPG Worldbuilding AI that generates interesting random factions and organizations for a TTRPG."
         """
-        traits = ", ".join([random.choice(cls.personality) for _ in range(2)])
-        prompt = f"Generate a {world.genre} faction for a TTRPG in a location described as follows: {traits}\n{description}.  The faction needs a backstory containing an unusual, wonderful, OR sinister secret that gives the Faction a goal they are working toward."
+        traits = [random.choice(traits) for traits in cls.personality.values()]
+        prompt = f"Generate a {world.genre} faction with the following traits: {', '.join(traits)} for a TTRPG in a location described as follows: \n{description}.  The faction needs a backstory containing an unusual, wonderful, OR sinister secret that gives the Faction a goal they are working toward."
         obj_data = super().generate(primer, prompt)
         obj_data |= {"world": world, "traits": traits}
         obj = cls(**obj_data)
@@ -106,3 +123,28 @@ class Faction(TTRPGObject):
 
         self.save()
         return character
+
+    def page_data(self, root_path="ttrpg"):
+        members = (
+            [f"{m.name}]({m.wiki_path})" for m in self.members]
+            if self.members
+            else "Unknown"
+        )
+        return {
+            "Goal": self.goal,
+            "Leader": f"{self.leader.name}]({self.leader.wiki_path})"
+            if self.leader
+            else "Unknown",
+            "Details": [
+                f"status: {self.status if self.status else 'Unknown'}",
+                f"members: {members}",
+            ],
+        }
+
+    def canonize(self, api=None, root_path="ttrpg"):
+        if not api:
+            api = self._wiki_api
+        super().canonize(api, root_path)
+        for f in self.members:
+            f.canonize(api=api, root_path=root_path)
+        self.save()

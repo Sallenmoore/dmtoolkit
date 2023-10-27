@@ -130,3 +130,24 @@ class Creature(TTRPGObject):
         obj = cls(**obj_data)
         obj.save()
         return obj
+
+    def page_data(self, root_path="ttrpg"):
+        data = {
+            "Goal": self.goal,
+            "Details": [
+                f"type: {self.type}",
+                f"size: {self.size}",
+                f"hit_points: {self.hit_points}",
+            ],
+            "Attributes": [
+                f"str: {self.str}",
+                f"dex: {self.dex}",
+                f"con: {self.con}",
+                f"wis: {self.wis}",
+                f"int: {self.int}",
+                f"cha: {self.cha}",
+            ],
+            "Abilities": self.abilities,
+            "Inventory": self.inventory,
+        }
+        return data

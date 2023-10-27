@@ -1,11 +1,10 @@
 import json
-import re
 
 from autonomous import log
 from autonomous.ai import OpenAI
-from autonomous.storage.markdown import Page
 from autonomous.model.automodel import AutoModel
 from autonomous.storage.cloudinarystorage import CloudinaryStorage
+from autonomous.storage.markdown import Page
 from slugify import slugify
 
 
@@ -22,7 +21,9 @@ class TTRPGObject(AutoModel):
         "dob": "",
         "traits": [],
         "world": None,
-        "wiki_ids": {},
+        "wiki_id": None,
+        "wiki_path": "",
+        "notes": ["TBD"],
     }
 
     def __getattr__(self, key):
@@ -122,34 +123,61 @@ class TTRPGObject(AutoModel):
                     json_invalid_count -= 1
         return obj_data
 
-    def canonize(self, api=None, path="ttrpg"):
-        wrld = self.world.name if self.world else self.name
+    def page_data(self):
+        return {}
+
+    def page_url(self, path="ttrpg"):
+        # TODO: base_url = self._wiki_api.wiki_api.endpoint[:-1] if endswith
+        return f"{self.wiki_path}"
+
+    def canonize(self, api=None, root_path="ttrpg"):
+        if not self.wiki_path:
+            model = self.__class__.__name__.lower()
+            w = f"{self.world.slug}/" if self.world else ""
+            self.wiki_path = f"/{root_path}/{w}{model}/{self.slug}"
+
         config = {
-            self.name: {
-                "Meta": [f"Genre: {self.genre}", f"World: {wrld}"],
-                "Details": self,
-            }
+            "Notes": self.notes,
+            "Image": f"![{self.name}]({self.image()} =x350) \n\n {self.desc}",
+            "Meta": [
+                f"Genre: {self.genre}",
+                f"World: {self.world.name if self.world else self.name}",
+                f"pk: {self.pk}",
+            ],
         }
-        model = self.__class__.__name__.lower()
-        world = self.world.name.lower() if self.world else self.name.lower()
+
+        if self.traits:
+            config["Meta"] += [f"Traits: {', '.join(self.traits)}"]
+
+        if hasattr(self, "history") and self.history:
+            config |= {"History": self.history}
+        elif self.backstory:
+            config |= {"Backstory": self.backstory}
+
+        config |= self.page_data(root_path=root_path)
+
         if not api:
             api = self._wiki_api
 
-        key = api.__class__.__name__.lower()
-        if key not in self.wiki_ids:
+        if self.wiki_id:
             res = api.push(
                 config,
                 title=self.name,
-                path=f"{path}/{model}/{self.slug}",
-                description=self.desc[: self.desc.find(".") + 1],
-                tags=[model, world, "ttrpg"],
+                id=self.wiki_id,
             )
-            self.wiki_ids[key] = res.id
-            self.save()
         else:
             res = api.push(
                 config,
                 title=self.name,
-                id=self.wiki_ids[key],
+                path=f"{self.wiki_path}",
+                description=self.desc[: self.desc.find(".") + 1],
+                tags=[
+                    self.__class__.__name__,
+                    self.world.slug if self.world else self.slug,
+                    "ttrpg",
+                ],
             )
+            print(res)
+            self.wiki_id = res.id
+            self.save()
         return res

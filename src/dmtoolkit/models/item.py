@@ -57,3 +57,13 @@ class Item(TTRPGObject):
         obj = cls(**obj_data)
         obj.save()
         return obj
+
+    def page_data(self, root_path="ttrpg"):
+        return {
+            "Details": [
+                f"rarity: {self.rarity if self.rarity else 'Unknown'}",
+                f"cost: {self.cost if self.cost else 'Unknown'}",
+                f"duration: {self.duration if self.duration else 'Unknown'}",
+                f"weight: {self.weight if self.weight else 'Unknown'}",
+            ]
+        }

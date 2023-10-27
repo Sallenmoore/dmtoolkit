@@ -1,7 +1,4 @@
-import json
-
 from autonomous import log
-from autonomous.apis import OpenAI
 
 from dmtoolkit.models.ttrpgobject import TTRPGObject
 
@@ -12,7 +9,7 @@ class Location(TTRPGObject):
     attributes = TTRPGObject.attributes | {
         "owner": None,
         "inhabitants": [],
-        "inventory": {},
+        "inventory": [],
     }
     funcobj = {
         "name": "generate_location",
@@ -88,3 +85,18 @@ class Location(TTRPGObject):
         obj = cls(**obj_data)
         obj.save()
         return obj
+
+    def page_data(self, root_path="ttrpg"):
+        owner = self.owner if self.owner else "Unknown"
+        inhabitants = [f"[{r.name}]({r.wiki_path})" for r in self.inhabitants]
+        inventory = [
+            f"{r.get('name')} ({r.get('value')}): {r.get('desc')}"
+            for r in self.inventory
+        ]
+        return {"Owner": owner, "Inhabitants": inhabitants, "Items": inventory}
+
+    def canonize(self, api=None, root_path="ttrpg"):
+        super().canonize(api, root_path)
+        for f in self.inhabitants:
+            f.canonize(api=api, root_path=root_path)
+        self.save()

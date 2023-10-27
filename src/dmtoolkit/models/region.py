@@ -4,7 +4,7 @@ import random
 from autonomous import log
 from autonomous.ai import OpenAI
 
-from dmtoolkit.models import City, Faction, Location
+from dmtoolkit.models import City, Encounter, Faction, Location
 from dmtoolkit.models.ttrpgobject import TTRPGObject
 
 
@@ -13,6 +13,7 @@ class Region(TTRPGObject):
         "cities": [],
         "locations": [],
         "factions": [],
+        "encounters": [],
     }
 
     environments = [
@@ -105,3 +106,29 @@ class Region(TTRPGObject):
                 city.factions = self.factions
         self.save()
         return self.factions
+
+    def create_encounter(self, num_players=5, level=1):
+        for _ in range(n):
+            self.encounters.append(
+                Encounter.generate(world=self.world, num_players=5, level=1)
+            )
+        self.save()
+        return self.encounters
+
+    def page_data(self, root_path="ttrpg"):
+        cities = [f"[{r.name}]({r.wiki_path})" for r in self.cities]
+        locations = [f"[{r.name}]({r.wiki_path})" for r in self.locations]
+        factions = [f"[{r.name}]({r.wiki_path})" for r in self.factions]
+        encounters = {r.name: r.page_data() for r in self.encounters}
+        return {
+            "Cities": cities,
+            "Locations": locations,
+            "Factions": factions,
+            "Encounters": encounters,
+        }
+
+    def canonize(self, api=None, root_path="ttrpg"):
+        super().canonize(api, root_path)
+        for f in [*self.factions, *self.locations, *self.cities]:
+            f.canonize(api=api, root_path=root_path)
+        self.save()

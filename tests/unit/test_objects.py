@@ -250,7 +250,7 @@ class TestModels:
         # log(url)
         assert city._image["url"] == url
 
-        result = city.add_locations()
+        result = city.create_locations()
         assert any(city.locations.values())
 
         assert city.districts
@@ -355,6 +355,7 @@ class TestModels:
         log(result2.get_image_prompt(), result2.image())
         assert all((result2.image(), result.image()))
 
+    @pytest.mark.skip(reason="costs money")
     def test_character_canonize(self):
         character = Character.generate(world=World(name="Test", genre="fantasy"))
         character.save()
