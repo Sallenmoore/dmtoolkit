@@ -10,51 +10,49 @@ from .character import Character
 
 
 class Faction(TTRPGObject):
-    attributes = TTRPGObject.attributes | {
-        # character traits
-        "goal": "",
-        "status": "",
-        "leader": None,
-        "members": [],
-    }
-    personality = {
-        "social": [
-            "secretive",
-            "agressive",
-            "courageous",
-            "cowardly",
-            "quirky",
-            "imaginative",
-            "reckless",
-            "cautious",
-            "suspicious",
-            "friendly",
-            "unfriendly",
-        ],
-        "political": [
-            "practical",
-            "violent",
-            "cautious",
-            "sinister",
-            "anarchic",
-            "religous",
-            "patriotic",
-            "nationalistic",
-            "xenophobic",
-            "racist",
-            "egalitarian",
-        ],
-        "economic": [
-            "disruptive",
-            "ambitious",
-            "corrupt",
-            "charitable",
-            "greedy",
-            "generous",
-        ],
-    }
+    goal: str = ""
+    status: str = ""
+    leader: Character = None
+    members: list[Character] = []
 
-    funcobj = {
+    _personality = {
+            "social": [
+                "secretive",
+                "agressive",
+                "courageous",
+                "cowardly",
+                "quirky",
+                "imaginative",
+                "reckless",
+                "cautious",
+                "suspicious",
+                "friendly",
+                "unfriendly",
+            ],
+            "political": [
+                "practical",
+                "violent",
+                "cautious",
+                "sinister",
+                "anarchic",
+                "religous",
+                "patriotic",
+                "nationalistic",
+                "xenophobic",
+                "racist",
+                "egalitarian",
+            ],
+            "economic": [
+                "disruptive",
+                "ambitious",
+                "corrupt",
+                "charitable",
+                "greedy",
+                "generous",
+            ],
+        }
+
+    _funcobj = {
         "name": "generate_faction",
         "description": "completes Faction data object",
         "parameters": {
@@ -94,7 +92,7 @@ class Faction(TTRPGObject):
         primer = f"""
         You are an expert {world.genre} TTRPG Worldbuilding AI that generates interesting random factions and organizations for a TTRPG."
         """
-        traits = [random.choice(traits) for traits in cls.personality.values()]
+        traits = [random.choice(traits) for traits in cls._personality.values()]
         prompt = f"Generate a {world.genre} faction with the following traits: {', '.join(traits)} for a TTRPG in a location described as follows: \n{description}.  The faction needs a backstory containing an unusual, wonderful, OR sinister secret that gives the Faction a goal they are working toward."
         obj_data = super().generate(primer, prompt)
         obj_data |= {"world": world, "traits": traits}

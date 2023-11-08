@@ -1,4 +1,5 @@
 import random
+from typing import Any
 
 from autonomous import log
 
@@ -7,22 +8,19 @@ from dmtoolkit.models.ttrpgobject import TTRPGObject
 
 
 class World(TTRPGObject):
-    genres = ["fantasy", "sci-fi", "hardboiled", "horror", "post-apocalyptic"]
-
-    attributes = TTRPGObject.attributes | {
-        "regions": [],
-        "system": None,
-        "genre": "",
-        "user": None,
-    }
+    _genres = ["fantasy", "sci-fi", "hardboiled", "horror", "post-apocalyptic"]
+    regions: list = []
+    system: Any = None
+    genre: str = ""
+    user: Any
 
     def __init__(self, *args, **kwargs):
         if not self.name:
-            self.name = f"{self.genre.capitalize()} World."
+            self.name = f"{self.genre.capitalize()} World"
         if not self.desc:
             self.desc = f"An expansive, complex, and mysterious {self.genre.capitalize()} setting suitable for a TTRPG campaign."
         if not self.backstory:
-            self.desc = f"{self.name} World has several factions vying for power through poltical machinations, subterfuge, and open warfare. The world is filled with points of interest to explore, antagonistic characters, and a rich, mysterious history"
+            self.desc = f"{self.name} World's landscape is filled with points of interest to explore and unique non-player character interactions that over time reveal the complex and mysterious history of this world, as well as determine its future.Currently, there are several factions vying for power through poltical machinations, subterfuge, and open warfare."
 
     @property
     def history(self):

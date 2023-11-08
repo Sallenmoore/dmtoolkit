@@ -9,14 +9,13 @@ from dmtoolkit.models.ttrpgobject import TTRPGObject
 
 
 class Region(TTRPGObject):
-    attributes = TTRPGObject.attributes | {
-        "cities": [],
-        "locations": [],
-        "factions": [],
-        "encounters": [],
-    }
+    
+    cities:list = []
+    locations:list = []
+    factions:list = []
+    encounters:list = []
 
-    environments = [
+    _environments = [
         "coastal",
         "mountainous",
         "desert",
@@ -27,31 +26,33 @@ class Region(TTRPGObject):
         "underground",
     ]
 
-    funcobj = {
-        "name": "generate_region",
-        "description": "creates Region data object",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "description": "The region's name",
-                },
-                "desc": {
-                    "type": "string",
-                    "description": "A physical description of the region",
-                },
-                "backstory": {
-                    "type": "string",
-                    "description": "A brief history of the region",
+    @property
+    def funcobj(self):
+        return {
+            "name": "generate_region",
+            "description": "creates Region data object",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "The region's name",
+                    },
+                    "desc": {
+                        "type": "string",
+                        "description": "A physical description of the region",
+                    },
+                    "backstory": {
+                        "type": "string",
+                        "description": "A brief history of the region",
+                    },
                 },
             },
-        },
-    }
+        }
 
     @classmethod
     def generate(cls, world, description="magic exists"):
-        trait = [random.choice(cls.environments)]
+        trait = [random.choice(cls._environments)]
         primer = """
         As an expert AI in fictional Worldbuilding, generate a fictional region complete with a name and description.
         """

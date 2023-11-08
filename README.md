@@ -1,6 +1,6 @@
 # dmtoolkit
 
-!!!!!!!!!!!!!!!!!!!! NOT YET STABLE !!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!! NO LONGHER UNDER DEVELOPMENT - FOLDED INTO ANOTHER PROJECT !!!!!!!!!!!!!!!!!!!!!!!!
 
 - **[pypi](https://pypi.org/project/dmtoolkit/)**
 - **[github](https://github.com/Sallenmoore/dmtoolkit)**

@@ -1,4 +1,5 @@
 import random
+from typing import Any
 
 from autonomous import log
 
@@ -8,86 +9,87 @@ from dmtoolkit.models.ttrpgobject import TTRPGObject
 
 
 class City(TTRPGObject):
-    attributes = TTRPGObject.attributes | {
-        "population": 0,
-        "traits": "",
-        "factions": [],
-        "locations": {},
-        "encounters": [],
-    }
+    population: int = 0
+    factions: list = []
+    locations: dict = {}
+    encounters: list = []
 
-    personality = {
-        "social": [
-            "bohemian",
-            "decedent",
-            "snooty",
-            "aggressive",
-            "proud",
-            "distrustful",
-        ],
-        "political": [
-            "Anarchic",
-            "Aristocratic",
-            "Authoritarianist",
-            "Bureaucratic",
-            "Confederationist",
-            "Colonialist",
-            "Communist",
-            "Democratic",
-            "Fascist",
-            "Kleptocratic",
-            "Meritocratic",
-            "Militaristic",
-            "Monarchic",
-            "Theocratic",
-            "Totalitarian",
-            "Tribalist",
-        ],
-        "economic": [
-            "palace",
-            "capitalist",
-            "mercantilist",
-            "proprietist",
-            "fuedalist",
-            "socialist",
-        ],
-        "size": [
-            "village",
-            "town",
-            "city",
-        ],
-    }
+    @property
+    def personality(self):
+        return {
+            "social": [
+                "bohemian",
+                "decedent",
+                "snooty",
+                "aggressive",
+                "proud",
+                "distrustful",
+            ],
+            "political": [
+                "Anarchic",
+                "Aristocratic",
+                "Authoritarianist",
+                "Bureaucratic",
+                "Confederationist",
+                "Colonialist",
+                "Communist",
+                "Democratic",
+                "Fascist",
+                "Kleptocratic",
+                "Meritocratic",
+                "Militaristic",
+                "Monarchic",
+                "Theocratic",
+                "Totalitarian",
+                "Tribalist",
+            ],
+            "economic": [
+                "palace",
+                "capitalist",
+                "mercantilist",
+                "proprietist",
+                "fuedalist",
+                "socialist",
+            ],
+            "size": [
+                "village",
+                "town",
+                "city",
+            ],
+        }
 
-    funcobj = {
-        "name": "generate_city",
-        "description": "completes City data object",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "description": "The city's name",
-                },
-                "population": {
-                    "type": "integer",
-                    "description": "The city's population",
-                },
-                "backstory": {
-                    "type": "string",
-                    "description": "A short history of the city in 750 words or less",
-                },
-                "desc": {
-                    "type": "string",
-                    "description": "A physical description of the appearance of the city in 500 words or less.",
-                },
-                "districts": {
-                    "type": "array",
-                    "description": "The names of the districts in the city, if present",
-                    "items": {"type": "string"},
+    @property
+    def funcobj(self):
+        return {
+            "name": "generate_city",
+            "description": "completes City data object",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "The city's name",
+                    },
+                    "population": {
+                        "type": "integer",
+                        "description": "The city's population",
+                    },
+                    "backstory": {
+                        "type": "string",
+                        "description": "A short history of the city in 750 words or less",
+                    },
+                    "desc": {
+                        "type": "string",
+                        "description": "A physical description of the appearance of the city in 500 words or less.",
+                    },
+                    "districts": {
+                        "type": "array",
+                        "description": "The names of the districts in the city, if present",
+                        "items": {"type": "string"},
+                    },
                 },
             },
-        },
-    }
+        }
 
     @property
     def districts(self):

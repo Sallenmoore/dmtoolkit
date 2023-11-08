@@ -123,8 +123,10 @@ class DnDCharacter(Character):
             if results := self.table().find(dnd_id=self.dnd_beyond_id):
                 self.pk = results["pk"]
 
-            if data["image"]["url"] and data["image"]["url"] != self.image.get("url"):
-                self.image = CloudinaryStorage().save(
+            if data["image"]["url"] and data["image"]["url"] != self.image_data.get(
+                "url"
+            ):
+                self.image_data = CloudinaryStorage().save(
                     data["image"]["url"], folder=f"dnd/players/{slugify(self.name)}"
                 )
             del data["image"]

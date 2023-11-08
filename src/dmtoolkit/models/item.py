@@ -7,13 +7,12 @@ from dmtoolkit.models.ttrpgobject import TTRPGObject
 
 
 class Item(TTRPGObject):
-    attributes = TTRPGObject.attributes | {
-        "rarity": "",
-        "cost": 0,
-        "duration": "",
-        "weight": 0,
-    }
-    funcobj = {
+    rarity:str = ""
+    cost:int = 0
+    duration:str = ""
+    weight:int = 0
+    
+    _funcobj = {
         "name": "generate_item",
         "description": "creates Item data object",
         "parameters": {

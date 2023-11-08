@@ -8,7 +8,6 @@ class Creature(DnDObject):
     search_api = monster_api
     attributes = {
         "name": "",
-        "image": {"url": "", "asset_id": 0, "raw": None},
         "desc": "",
         "type": "",
         "size": "",

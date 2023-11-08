@@ -1,4 +1,5 @@
 import json
+from typing import Any, Dict
 
 from autonomous import log
 from autonomous.ai import OpenAI
@@ -11,20 +12,19 @@ from slugify import slugify
 class TTRPGObject(AutoModel):
     _storage = CloudinaryStorage()
     _wiki_api = Page
-    attributes = {
-        "name": "",
-        "_image": {"url": "", "asset_id": 0, "raw": None},
-        "backstory": "",
-        "_bs_summary": "",
-        "desc": "",
-        "dod": "",
-        "dob": "",
-        "traits": [],
-        "world": None,
-        "wiki_id": None,
-        "wiki_path": "",
-        "notes": ["TBD"],
-    }
+
+    name: str = ""
+    image_data: dict = None
+    backstory: str = ""
+    bs_summary: str = ""
+    desc: str = ""
+    dod: str = ""
+    dob: str = ""
+    traits: list = []
+    world: Any = None
+    wiki_id: str = ""
+    wiki_path: str = ""
+    notes: list[str] = ["TBD"]
 
     def __getattr__(self, key):
         if key == "genre" and self.world:
@@ -47,44 +47,53 @@ class TTRPGObject(AutoModel):
 
     @property
     def backstory_summary(self):
-        if not self._bs_summary:
+        if not self.bs_summary:
             primer = "As an expert AI in fictional Worldbuilding fof TTRPGs, summarize the following backstory into a concise paragraph, creating a readable summary that could help a person understand the main points of the backstory. Avoid unnecessary details."
 
-            self._bs_summary = OpenAI().summarize_text(self.backstory, primer=primer)
+            self.bs_summary = OpenAI().summarize_text(self.backstory, primer=primer)
             self.save()
-        return self._bs_summary
+        return self.bs_summary
+
+    def image(self, url=None, raw=None, asset_id=0):
+        if self.image_data is None:
+            self.image_data = {}
+        if url:
+            self.image_data["url"] = url
+        if raw:
+            self.image_data["raw"] = raw
+        if asset_id:
+            self.image_data["asset_id"] = asset_id
+        return self.image_data
 
     def save(self):
-        if self._image.get("raw"):
-            self.image(update=True)
+        self.get_image()
         return super().save()
 
-    def image(self, url=None, update=False):
-        if url:
-            self._image["url"] = url
-
-        if update or not self._image["url"]:
-            if not self._image.get("raw"):
+    def get_image(self, url=None, update=False):
+        log(self.image_data)
+        self.image_data["url"] = url or self.image_data.get("url")
+        if update or not self.image_data["url"]:
+            if not self.image_data.get("raw"):
                 resp = OpenAI().generate_image(
                     self.get_image_prompt(),
                     n=1,
                 )
                 # log(resp)
-                self._image["raw"] = resp[0]
+                self.image_data["raw"] = resp[0]
 
             if self.world:
                 img_path = f"ttrpg/{self.world.slug}/{self.__class__.__name__.lower()}"
             else:
                 img_path = f"ttrpg/{self.slug}/{self.__class__.__name__.lower()}"
 
-            self._image = self._storage.save(
-                self._image["raw"],
+            self.image_data = self._storage.save(
+                self.image_data["raw"],
                 folder=img_path,
                 context={"caption": self.get_image_prompt()[:500]},
             )
-        if self._image["url"]:
-            self._image["raw"] = None
-        return self._image["url"]
+        if self.image_data["url"]:
+            self.image_data["raw"] = None
+        return self.image_data["url"]
 
     def get_image_prompt(self):
         raise NotImplementedError
@@ -99,28 +108,29 @@ class TTRPGObject(AutoModel):
         else:
             response = OpenAI().generate_text(prompt, primer)
 
-        json_invalid_count = 10
-        json_valid = False
-        while not json_valid:
+        json_invalid_max = 10
+        json_retries = 1
+        obj_data = None
+        while json_invalid_max > 0:
             try:
                 obj_data = json.loads(response, strict=False)
-                json_valid = True
             except json.JSONDecodeError as e:
                 response = response[: e.pos] + response[e.pos + 1 :]
                 log(e, response)
-                if json_invalid_count == 0:
+                if json_retries:
                     if hasattr(cls, "funcobj"):
-                        cls.funcobj["parameters"]["required"] = list(
-                            cls.funcobj["parameters"]["properties"].keys()
+                        cls._funcobj["parameters"]["required"] = list(
+                            cls._funcobj["parameters"]["properties"].keys()
                         )
                         response = OpenAI().generate_text(
-                            prompt, primer, functions=cls.funcobj
+                            prompt, primer, functions=cls._funcobj
                         )
                     else:
                         response = OpenAI().generate_text(prompt, primer)
-                    json_invalid_count = 10
+                        json_invalid_max = 10
+                    json_retries -= 1
                 else:
-                    json_invalid_count -= 1
+                    json_invalid_max -= 1
         return obj_data
 
     def page_data(self):
@@ -138,7 +148,7 @@ class TTRPGObject(AutoModel):
 
         config = {
             "Notes": self.notes,
-            "Image": f"![{self.name}]({self.image()} =x350) \n\n {self.desc}",
+            "Image": f"![{self.name}]({self.get_image()} =x350) \n\n {self.desc}",
             "Meta": [
                 f"Genre: {self.genre}",
                 f"World: {self.world.name if self.world else self.name}",

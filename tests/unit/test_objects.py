@@ -15,7 +15,7 @@ from slugify import slugify
 
 
 class TestModels:
-    @pytest.mark.skip(reason="takes too long")
+    # @pytest.mark.skip(reason="takes too long")
     def test_world_object(self):
         world = World(
             name="Test",
@@ -35,7 +35,7 @@ class TestModels:
 
         assert world.get_image_prompt()
 
-    @pytest.mark.skip(reason="takes too long")
+    # @pytest.mark.skip(reason="takes too long")
     def test_character(self):
         object = Character(world=World(name="Test", genre="sci-fi"))
         assert object
@@ -74,7 +74,7 @@ class TestModels:
         assert character.chats["response"]
         assert character.chats["summary"]
 
-    @pytest.mark.skip(reason="takes too long")
+    # @pytest.mark.skip(reason="takes too long")
     def test_faction(self):
         object = Faction(world=World(name="Test", genre="sci-fi"))
         assert object
@@ -102,7 +102,7 @@ class TestModels:
         log(url)
         assert faction._image["url"] == url
 
-    @pytest.mark.skip(reason="takes too long")
+    # @pytest.mark.skip(reason="takes too long")
     def test_creature(self):
         object = Creature(world=World(name="Test", genre="sci-fi"))
         assert object
@@ -137,7 +137,7 @@ class TestModels:
         log(url)
         assert creature._image["url"] == url
 
-    @pytest.mark.skip(reason="costs money")
+    # @pytest.mark.skip(reason="costs money")
     def test_encounter(self):
         object = Encounter(world=World(name="Test", genre="sci-fi"))
         assert object
@@ -164,7 +164,7 @@ class TestModels:
         log(url)
         assert encounter._image["url"] == url
 
-    @pytest.mark.skip(reason="costs money")
+    # @pytest.mark.skip(reason="costs money")
     def test_item(self):
         object = Item(world=World(name="Test", genre="sci-fi"))
         assert object
@@ -190,7 +190,7 @@ class TestModels:
         log(url)
         assert item._image["url"] == url
 
-    @pytest.mark.skip(reason="costs money")
+    # @pytest.mark.skip(reason="costs money")
     def test_location(self):
         object = Location(world=World(name="Test", genre="sci-fi"))
         assert object
@@ -222,7 +222,7 @@ class TestModels:
         assert location.owner == result
         assert len(location.inhabitants) == 1
 
-    @pytest.mark.skip(reason="costs money")
+    # @pytest.mark.skip(reason="costs money")
     def test_city(self):
         object = City(world=World(name="Test", genre="sci-fi"))
         assert object
@@ -255,7 +255,7 @@ class TestModels:
 
         assert city.districts
 
-    @pytest.mark.skip(reason="costs money")
+    # @pytest.mark.skip(reason="costs money")
     def test_region(self):
         object = Region(world=World(name="Test", genre="sci-fi"))
         assert object
@@ -294,7 +294,7 @@ class TestModels:
             assert c.genre == region.genre
             assert c.factions == region.factions
 
-    @pytest.mark.skip(reason="costs money")
+    # @pytest.mark.skip(reason="costs money")
     def test_world_build(self):
         world = World(
             name="Xanadu",
@@ -320,7 +320,10 @@ class TestModels:
         # log(url)
         assert world._image["url"] == url
 
-        world = world.generate()
+        world.generate(region=1, location=3, city=2, faction=2)
+        pk = world.save()
+        log(pk, world)
+        res = world.canonize(root_path="ttrpg/unused-objects")
         assert len(world.regions) == 1
         all(len(r.cities) == 2 for r in world.regions)
         all(len(r.factions) == 2 for r in world.regions)

@@ -33,8 +33,7 @@ testinit: clean updatepkgs
 	pip install -e .
 
 RUNTEST='test_'
-test:
-	pip install -e .
+test: testinit
 	python -m pytest -k $(RUNTEST)
 
 tests:

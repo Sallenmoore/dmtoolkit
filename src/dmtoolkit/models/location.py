@@ -6,12 +6,11 @@ from .character import Character
 
 
 class Location(TTRPGObject):
-    attributes = TTRPGObject.attributes | {
-        "owner": None,
-        "inhabitants": [],
-        "inventory": [],
-    }
-    funcobj = {
+    owner:Character = None
+    inhabitants:list[Character] = []
+    inventory:list[str] = []
+    
+    _funcobj = {
         "name": "generate_location",
         "description": "builds a Location model object",
         "parameters": {

@@ -1,5 +1,6 @@
 import json
 import random
+from typing import Any
 
 from autonomous import log
 from autonomous.ai import OpenAI
@@ -8,33 +9,30 @@ from dmtoolkit.models.ttrpgobject import TTRPGObject
 
 
 class Character(TTRPGObject):
-    attributes = TTRPGObject.attributes | {
-        "npc": True,
-        "canon": False,
-        "gender": "",
-        "occupation": "",
-        "goal": "",
-        "race": "",
-        "hp": 0,
-        "str": 0,
-        "dex": 0,
-        "con": 0,
-        "wis": 0,
-        "int": 0,
-        "cha": 0,
-        "dob": "",
-        "dod": "",
-        "wealth": [],
-        "inventory": [],
-        "chats": {
-            "history": [],
-            "summary": "The beginning of a conversation between a TTRPG PC and NPC.",
-            "message": "",
-            "response": "",
-        },
+    npc: bool = True
+    canon: bool = False
+    gender: str = ""
+    occupation: str = ""
+    goal: str = ""
+    race: str = ""
+    hitpoints: int = 0
+    strength: int = 0
+    dexterity: int = 0
+    constitution: int = 0
+    wisdom: int = 0
+    intelligence: int = 0
+    charisma: int = 0
+    wealth: list[str] = []
+    inventory: list[str] = []
+    chats: dict = {
+        "history": [],
+        "summary": "The beginning of a conversation between a TTRPG PC and NPC.",
+        "message": "",
+        "response": "",
     }
-    genders = ["male", "female", "non-binary"]
-    personality = {
+    _genders = ["male", "female", "non-binary"]
+
+    _personality = {
         "social": [
             "shy",
             "outgoing",
@@ -97,7 +95,7 @@ class Character(TTRPGObject):
         ],
     }
 
-    funcobj = {
+    _funcobj = {
         "name": "generate_npc",
         "description": "completes NPC data object",
         "parameters": {
@@ -145,27 +143,27 @@ class Character(TTRPGObject):
                     "description": "The character's inventory of items",
                     "items": {"type": "string"},
                 },
-                "str": {
+                "strength": {
                     "type": "number",
                     "description": "The amount of Strength the character has from 1-20",
                 },
-                "dex": {
+                "dexterity": {
                     "type": "integer",
                     "description": "The amount of Dexterity the character has from 1-20",
                 },
-                "con": {
+                "constitution": {
                     "type": "integer",
                     "description": "The amount of Constitution the character has from 1-20",
                 },
-                "int": {
+                "intelligence": {
                     "type": "integer",
                     "description": "The amount of Intelligence the character has from 1-20",
                 },
-                "wis": {
+                "wisdom": {
                     "type": "integer",
                     "description": "The amount of Wisdom the character has from 1-20",
                 },
-                "cha": {
+                "charisma": {
                     "type": "integer",
                     "description": "The amount of Charisma the character has from 1-20",
                 },
@@ -218,11 +216,11 @@ class Character(TTRPGObject):
     @classmethod
     def generate(cls, world, description=None):
         age = random.randint(15, 45)
-        gender = random.choices(cls.genders, weights=[4, 5, 1], k=1)[0]
+        gender = random.choices(cls._genders, weights=[4, 5, 1], k=1)[0]
         primer = primer = f"""
         As an expert AI in fictional {world.genre} worldbuilding, you generate characters appropriate to the genre with a name and full details.
         """
-        traits = [random.choice(traits) for traits in cls.personality.values()]
+        traits = [random.choice(traits) for traits in cls._personality.values()]
         prompt = f"As an expert AI in creating NPCs for a {world.genre} TTRPG. Generate a {gender} NPC aged {age} years with the following personality traits: {', '.join(traits)}. Write a detailed backstory containing an unusual, wonderful, OR sinister secret that gives the character a goal to work toward"
         if description:
             prompt += (
@@ -242,7 +240,7 @@ class Character(TTRPGObject):
 
     def page_data(self, root_path="ttrpg"):
         data = {
-            "Goal": [
+            "Goals": [
                 self.goal,
                 {
                     "chats": [
@@ -258,15 +256,15 @@ class Character(TTRPGObject):
                 f"race: {self.race}",
                 f"DOB: {self.dob if self.dob else 'Unknown'}",
                 f"DOD: {self.dob if self.dod else 'Unknown'}",
-                f"hit points: {self.hp}",
+                f"hit points: {self.hitpoints}",
             ],
             "Attributes": [
-                f"str: {self.str}",
-                f"dex: {self.dex}",
-                f"con: {self.con}",
-                f"wis: {self.wis}",
-                f"int: {self.int}",
-                f"cha: {self.cha}",
+                f"strength: {self.strength}",
+                f"dexterity: {self.dexterity}",
+                f"constitution: {self.constitution}",
+                f"wisdom: {self.wisdom}",
+                f"intelligence: {self.intelligence}",
+                f"charisma: {self.charisma}",
             ],
             "Inventory": self.wealth + self.inventory,
         }

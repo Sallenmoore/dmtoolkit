@@ -8,22 +8,20 @@ from dmtoolkit.models.ttrpgobject import TTRPGObject
 
 
 class Creature(TTRPGObject):
-    attributes = TTRPGObject.attributes | {
-        "type": "",
-        "size": "",
-        "goal": "",
-        "hit_points": 0,
-        "abilities": [],
-        "inventory": [],
-        "str": 0,
-        "dex": 0,
-        "con": 0,
-        "wis": 0,
-        "int": 0,
-        "cha": 0,
-    }
+    type: str = ""
+    size: str = ""
+    goal: str = ""
+    abilities: list = []
+    inventory: list = []
+    hitpoints: int = 0
+    strength: int = 0
+    dexterity: int = 0
+    constitution: int = 0
+    wisdom: int = 0
+    intelligence: int = 0
+    charisma: int = 0
 
-    funcobj = {
+    _funcobj = {
         "name": "generate_creature",
         "description": "completes Creature data object",
         "parameters": {
@@ -72,27 +70,27 @@ class Creature(TTRPGObject):
                     "description": "The creature's inventory of items",
                     "items": {"type": "string"},
                 },
-                "str": {
+                "strength": {
                     "type": "number",
                     "description": "The amount of Strength the creature has from 1-20",
                 },
-                "dex": {
+                "dexterity": {
                     "type": "integer",
                     "description": "The amount of Dexterity the creature has from 1-20",
                 },
-                "con": {
+                "constitution": {
                     "type": "integer",
                     "description": "The amount of Constitution the creature has from 1-20",
                 },
-                "int": {
+                "intelligence": {
                     "type": "integer",
                     "description": "The amount of Intelligence the creature has from 1-20",
                 },
-                "wis": {
+                "wisdom": {
                     "type": "integer",
                     "description": "The amount of Wisdom the creature has from 1-20",
                 },
-                "cha": {
+                "charisma": {
                     "type": "integer",
                     "description": "The amount of Charisma the creature has from 1-20",
                 },
@@ -137,15 +135,15 @@ class Creature(TTRPGObject):
             "Details": [
                 f"type: {self.type}",
                 f"size: {self.size}",
-                f"hit_points: {self.hit_points}",
+                f"hit points: {self.hitpoints}",
             ],
             "Attributes": [
-                f"str: {self.str}",
-                f"dex: {self.dex}",
-                f"con: {self.con}",
-                f"wis: {self.wis}",
-                f"int: {self.int}",
-                f"cha: {self.cha}",
+                f"strength: {self.strength}",
+                f"dexerity: {self.dexterity}",
+                f"constitution: {self.constitution}",
+                f"wisdom: {self.wisdom}",
+                f"intelligence: {self.intelligence}",
+                f"charisma: {self.charisma}",
             ],
             "Abilities": self.abilities,
             "Inventory": self.inventory,

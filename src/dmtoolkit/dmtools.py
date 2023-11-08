@@ -17,7 +17,6 @@ def generator(world):
 
 
 if __name__ == "__main__":
-    World.table().flush_table()
     ws = World(
         genre="sci-fi",
         user=AutoUser(),
