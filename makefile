@@ -1,5 +1,5 @@
 
-.PHONY: all package startdb create-network clean deepclean tests test testauto testapp
+.PHONY: all package clean deepclean tests
 
 include .env
 export
@@ -14,32 +14,19 @@ package: clean
 	twine check dist/*
 	twine upload dist/*
 
-updatepkgs:
-	pip install --upgrade pip wheel && pip install --upgrade -r requirements.txt && pip install --upgrade -r requirements_dev.txt
-	
-
 ###### CLEANING #######
 
 clean:
 	rm -rf .pytest_cache .coverage dist
 
 ###### TESTING #######
-
-runcli: updatepkgs
-	python src/dmtoolkit/dmtools.py
-
-
-testinit: clean updatepkgs
+updatepkgs:
+	pip install --upgrade pip wheel && pip install --upgrade -r requirements.txt && pip install --upgrade -r requirements_dev.txt
 	pip install -e .
 
-RUNTEST='test_'
-test: testinit
-	python -m pytest -k $(RUNTEST)
-
-tests:
+tests: clean updatepkgs
 	python -m pytest
 
-testfull:testinit tests
 
 
 

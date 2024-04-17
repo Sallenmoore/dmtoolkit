@@ -1,8 +1,6 @@
 from enum import Enum
 
 import requests
-from autonomous import log
-from autonomous.model.automodel import AutoModel
 
 
 class DnDBeyondAPI:
@@ -29,7 +27,7 @@ class DnDBeyondAPI:
         try:
             r.raise_for_status()
         except requests.exceptions.HTTPError:
-            log(f"Error getting character {dnd_id}")
+            print(f"Error getting character {dnd_id}")
             character = None
         else:
             data = r.json()["data"]
@@ -44,9 +42,9 @@ class DnDBeyondAPI:
         character["name"] = kwargs.get("name")
         character["age"] = kwargs.get("age") or 0
         character["gender"] = kwargs.get("gender") or "Non-Binary"
-        character[
-            "desc"
-        ] = f" With {kwargs.get('hair', 'medium length')} hair, {kwargs.get('skin', 'weathered')} skin, and {kwargs.get('eyes'), 'hazel'} eyes, {character['name']} stands {kwargs.get('height', '6ft')} and weighs {kwargs.get('weight', 160)}"
+        character["desc"] = (
+            f" With {kwargs.get('hair', 'medium length')} hair, {kwargs.get('skin', 'weathered')} skin, and {kwargs.get('eyes'), 'hazel'} eyes, {character['name']} stands {kwargs.get('height', '6ft')} and weighs {kwargs.get('weight', 160)}"
+        )
 
         # breakpoint()
         character["image"] = {

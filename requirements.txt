@@ -2,9 +2,6 @@
 #           PRODUCTION           #
 ##################################
 
-##### Frameworks #####
-autonomous-app >= 0.1.53
-
 ##### System #####
 twine
 wheel
