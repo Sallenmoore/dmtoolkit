@@ -6,16 +6,20 @@ def test_get_dndbeyond_character():
 
 
 def test_get_monster():
-    assert dmtools.get_monster("gnoll")
+    assert dmtools.get_monster("/api/monsters/gnoll")
 
 
 def test_get_item():
-    assert dmtools.get_item("bag-of-tricks-tan")
-    assert dmtools.get_item("dice-set")
+    assert dmtools.get_item("/api/magic-items/bag-of-tricks")
+    assert dmtools.get_item("/api/equipment/dice-set")
 
 
 def test_get_spell():
-    assert dmtools.get_spell("animate-objects")
+    assert dmtools.get_spell("/api/spells/animate-objects")
+
+
+def test_get_feature():
+    assert dmtools.get_feature("/api/feats/grappler")
 
 
 def test_search_monster():
@@ -28,3 +32,7 @@ def test_search_item():
 
 def test_search_spell():
     assert dmtools.search_spell("ice")
+
+
+def test_search_feature():
+    assert dmtools.search_feature("arcane-tradition")

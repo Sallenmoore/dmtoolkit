@@ -1,4 +1,5 @@
 import requests
+from slugify import slugify
 
 
 class Open5e:
@@ -7,45 +8,43 @@ class Open5e:
     endpoints = []
 
     @classmethod
-    def get_endpoints(cls):
-        return [
+    def get_resources(cls):
+        endpoints = [
             f"{cls.base_url}/{cls.api_path}/{endpoint}" for endpoint in cls.endpoints
         ]
-
-    @classmethod
-    def all(cls, endpoint=None):
-        results = []
-        for endpoint in cls.get_endpoints():
+        resources = []
+        for endpoint in endpoints:
             response = requests.get(endpoint)
             response.raise_for_status()
-            response = response.json()
-            results += response["results"]
-        return results
+            resources += response.json().get("results")
+        return resources
 
     @classmethod
-    def search(cls, terms):
-        # split into tokens if possible
-        if isinstance(terms, str):
-            terms = terms.split()
-        # ensure the terms are a list
-        if not isinstance(terms, list):
-            terms = [terms]
+    def all(cls):
         results = []
-        for obj in cls.all():
-            if any(term in obj["name"].lower() for term in terms):
-                resource = obj["url"].split("/")[1]
-                results.append(cls.get(index=obj["index"], resource=resource))
+        for resource in cls.get_resources():
+            if url := resource.get("url"):
+                if not url.startswith(cls.base_url):
+                    url = cls.base_url + url
+                response = requests.get(url)
+                response.raise_for_status()
+                results.append(response.json())
         return results
 
     @classmethod
-    def get(cls, index, resource=None):
-        if resource is None:
-            urls = [f"{endpoint}/{index}" for endpoint in cls.get_endpoints()]
-        else:
-            urls = [f"{cls.base_url}/{cls.api_path}/{resource}/{index}"]
-        print(urls)
-        for endpoint in urls:
-            result = requests.get(endpoint).json()
-            if "error" not in result:
-                return result
+    def search(cls, term):
+        results = []
+        for obj in cls.get_resources():
+            if slugify(term) in obj["url"].lower():
+                results.append(cls.get(obj["url"]))
+        return results
+
+    @classmethod
+    def get(cls, url):
+        if not url.startswith(cls.base_url):
+            url = cls.base_url + url
+        print(url)
+        result = requests.get(url).json()
+        if "error" not in result:
+            return result
         return []

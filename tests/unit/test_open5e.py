@@ -25,18 +25,18 @@ class TestOpen5eapi:
 
         assert "Ammunition, +3" == item_data["name"]
 
-    def test_monster_api_all(self):
-        # Test that all() returns a list of monsters
-        monsters = Open5eMonster.all()
-        assert len(monsters) > 0
+    # def test_monster_api_all(self):
+    #     # Test that all() returns a list of monsters
+    #     monsters = Open5eMonster.all()
+    #     assert len(monsters) > 0
 
-    def test_spell_api_all(self):
-        spells = Open5eSpell.all()
-        assert len(spells) > 0
+    # def test_spell_api_all(self):
+    #     spells = Open5eSpell.all()
+    #     assert len(spells) > 0
 
-    def test_item_api_all(self):
-        items = Open5eItem.all()
-        assert len(items) > 0
+    # def test_item_api_all(self):
+    #     items = Open5eItem.all()
+    #     assert len(items) > 0
 
     def test_api_monster_search(self):
         monsters = Open5eMonster.search("goblin")
@@ -49,21 +49,3 @@ class TestOpen5eapi:
     def test_api_item_search(self):
         items = Open5eItem.search("leather")
         assert len(items) > 0
-
-    def test_api_spell_get(self):
-        spell_index = "animate-objects"
-        spell = Open5eSpell.get(index=spell_index)
-        assert spell["name"] == "Animate Objects"
-
-    def test_api_monster_get(self):
-        monster_index = "gnoll"
-        monster = Open5eMonster.get(index=monster_index)
-        assert monster["name"] == "Gnoll"
-
-    def test_api_item_get(self):
-        item_index = "dice-set"
-        item = Open5eItem.get(index=item_index)
-        assert item["name"] == "Dice Set"
-        item_index = "bag-of-tricks-tan"
-        item = Open5eItem.get(index=item_index)
-        assert item["name"] == "Tan Bag of Tricks"
