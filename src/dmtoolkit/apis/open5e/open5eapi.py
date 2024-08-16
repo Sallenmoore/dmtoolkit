@@ -43,8 +43,9 @@ class Open5e:
     def get(cls, url):
         if not url.startswith(cls.base_url):
             url = cls.base_url + url
-        print(url)
         result = requests.get(url).json()
         if "error" not in result:
             return result
+        if not result.get("image", "").startswith(cls.base_url):
+            result["image"] = cls.base_url + result["image"]
         return []
