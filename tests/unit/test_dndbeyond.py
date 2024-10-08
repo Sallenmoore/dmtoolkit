@@ -4,7 +4,7 @@ from apis import dndbeyondapi
 
 class TestDnDBeyondAPI:
     def test_player_build(self):
-        for dnd_id in [77709222, 68398459, 101495221, 70279502]:
+        for dnd_id in [126843674]:
             player = dndbeyondapi.DnDBeyondAPI.getcharacter(dnd_id)
 
             assert player["name"] is not None

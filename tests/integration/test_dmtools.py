@@ -14,8 +14,8 @@ def test_get_item():
     assert dmtools.get_item("/api/equipment/dice-set")
 
 
-def test_get_spell():
-    assert dmtools.get_spell("/api/spells/animate-objects")
+def test_get_rules():
+    assert dmtools.get_rules("/api/rules/adventuring")
 
 
 def test_get_feature():
@@ -30,8 +30,8 @@ def test_search_item():
     assert dmtools.search_item("fire")
 
 
-def test_search_spell():
-    assert dmtools.search_spell("ice")
+def test_search_rules():
+    assert dmtools.search_rules("rest")
 
 
 def test_search_feature():

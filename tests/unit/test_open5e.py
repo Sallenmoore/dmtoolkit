@@ -2,7 +2,7 @@ import pytest
 import requests
 from apis.open5e.open5eitem import Open5eItem
 from apis.open5e.open5emonster import Open5eMonster
-from apis.open5e.open5espell import Open5eSpell
+from apis.open5e.open5erules import Open5eRules
 
 
 class TestOpen5eapi:
@@ -42,8 +42,8 @@ class TestOpen5eapi:
         monsters = Open5eMonster.search("goblin")
         assert len(monsters) > 0
 
-    def test_api_spell_search(self):
-        spells = Open5eSpell.search("magic missile")
+    def test_api_rules_search(self):
+        spells = Open5eRules.search("rest")
         assert len(spells) > 0
 
     def test_api_item_search(self):
